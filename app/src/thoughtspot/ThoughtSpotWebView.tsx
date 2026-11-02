@@ -30,6 +30,12 @@ import { colors, thoughtSpotCustomizations } from '../theme';
 const PAGE_ORIGIN = 'http://localhost:4000';
 const SDK_URL = 'https://cdn.jsdelivr.net/npm/@thoughtspot/visual-embed-sdk@1.53.1/dist/tsembed.js';
 
+// ThoughtSpot's embedded app has a 580px minimum height (Spotter, Spotter
+// answers…). In a shorter frame the bottom or top of the content is cut off,
+// so zoom the page out just enough for 580px to fit. 1 when there is room.
+export const TS_MIN_HEIGHT = 580;
+export const zoomToFitHeight = (frameHeight: number) => Math.min(1, frameHeight / TS_MIN_HEIGHT);
+
 export type ThoughtSpotWebViewHandle = {
   // Runs JavaScript in the page, e.g. "embed.trigger(HostEvent.Reload)"
   run: (js: string) => void;

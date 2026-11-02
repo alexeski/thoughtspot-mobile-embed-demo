@@ -21,11 +21,9 @@ import { StyleSheet, View } from 'react-native';
 
 import { MODEL_ID } from '../../config';
 import { colors } from '../../theme';
-import ThoughtSpotWebView from '../../thoughtspot/ThoughtSpotWebView';
+import ThoughtSpotWebView, { zoomToFitHeight } from '../../thoughtspot/ThoughtSpotWebView';
 import LoadingOverlay from '../../ui/LoadingOverlay';
 import OptionPicker from '../../ui/OptionPicker';
-
-const SPOTTER_MIN_HEIGHT = 580; // ThoughtSpot's embedded app needs at least this much height
 
 // Runs inside the WebView, after init() (see ThoughtSpotWebView).
 const script = `
@@ -67,7 +65,7 @@ export default function SpotterScreen() {
       <OptionPicker tab="spotter" value="spotterWebSdk" />
       <View
         style={styles.container}
-        onLayout={(e) => setZoom((z) => z ?? Math.min(1, e.nativeEvent.layout.height / SPOTTER_MIN_HEIGHT))}
+        onLayout={(e) => setZoom((z) => z ?? zoomToFitHeight(e.nativeEvent.layout.height))}
       >
         {zoom && <ThoughtSpotWebView script={script} onMessage={onMessage} viewportScale={zoom} style={styles.webview} />}
         <LoadingOverlay loading={loading} error={error} label="Starting Spotter…" />

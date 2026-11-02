@@ -9,13 +9,19 @@
 //
 // Users get the real thing: chart/table toggle, filters, drill down, download.
 // Cost: one WebView per answer.
+//
+// The answer is ThoughtSpot's embedded app, so it has the same 580px minimum
+// height as Spotter: the card zooms its page out to fit (about 0.83 for a
+// 480px card) instead of cutting off the bottom of the chart.
 // ─────────────────────────────────────────────────────────────────────────────
 import React, { useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { colors } from '../../theme';
-import ThoughtSpotWebView from '../../thoughtspot/ThoughtSpotWebView';
+import ThoughtSpotWebView, { zoomToFitHeight } from '../../thoughtspot/ThoughtSpotWebView';
 import type { SpotterAnswer } from './types';
+
+const CARD_HEIGHT = 480; // compact enough to keep the conversation readable
 
 export default function EmbeddedAnswer({ answer }: { answer: SpotterAnswer }) {
   const script = useMemo(
@@ -30,14 +36,20 @@ export default function EmbeddedAnswer({ answer }: { answer: SpotterAnswer }) {
 
   return (
     <View style={styles.card}>
-      <ThoughtSpotWebView script={script} background={colors.surface} nestedScrollEnabled style={styles.webview} />
+      <ThoughtSpotWebView
+        script={script}
+        viewportScale={zoomToFitHeight(CARD_HEIGHT - 2)} // minus the card's 1px borders
+        background={colors.surface}
+        nestedScrollEnabled
+        style={styles.webview}
+      />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   card: {
-    height: 480,
+    height: CARD_HEIGHT,
     borderRadius: 12,
     borderWidth: 1,
     borderColor: colors.border,

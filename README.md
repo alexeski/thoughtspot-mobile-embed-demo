@@ -304,7 +304,7 @@ frame.src = answer.iframe_url;          // straight from get_session_updates
 document.getElementById('root').appendChild(frame);
 ```
 
-`startAutoMCPFrameRenderer()` watches the page for iframes marked `tsmcp=true` and replaces each one with an authenticated ThoughtSpot embed.
+`startAutoMCPFrameRenderer()` watches the page for iframes marked `tsmcp=true` and replaces each one with an authenticated ThoughtSpot embed. The answer is ThoughtSpot's embedded app, with the same 580px minimum height as Spotter, so the 480px card zooms its page to 0.83 (`zoomToFitHeight`) rather than cutting off the bottom of the chart.
 
 **⑤ Native.** The `answer_id` is `{"session_id": "…", "gen_no": 2}`, exactly what the export API needs. The backend exports that answer as CSV (with Spotter's filters) and the app picks a visual:
 
@@ -360,7 +360,7 @@ curl https://api.anthropic.com/v1/messages \
 | "Backend has no POST /api/…" | The app is newer than the backend that's running. Restart it (`npm start`). |
 | Token works but Spotter returns 400, or embeds show nothing | The token's Org doesn't hold the objects. See *Orgs* above. |
 | Spotter scrolls sideways | The classic Spotter UI. Turn on `updatedSpotterExperience`. |
-| Top of Spotter cut off (tablet in landscape) | Spotter needs at least 580px of height. Zoom the page to fit, as `SpotterScreen.tsx` does. |
+| Top of Spotter cut off (tablet in landscape), or bottom of an embedded answer chart cut off | ThoughtSpot's embedded app needs at least 580px of height. Zoom the page to fit with `zoomToFitHeight()` ([`ThoughtSpotWebView.tsx`](app/src/thoughtspot/ThoughtSpotWebView.tsx)), as Spotter and the answer cards do. |
 | Inspect what's inside a WebView | In development builds, open `chrome://inspect` in Chrome on your Mac: every app WebView is listed (`webviewDebuggingEnabled`). |
 | Liveboard spinner for minutes on the emulator | The emulator is slow; a phone takes seconds. For live demos, mirror a USB phone (`npm run demo:usb`). |
 | White bands over charts on the emulator | An emulator graphics glitch; real devices don't show it. |
