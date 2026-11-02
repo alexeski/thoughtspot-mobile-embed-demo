@@ -25,6 +25,7 @@ import { PRERENDER_DASHBOARD } from './src/config';
 import { OPTIONS, OptionKey, TabKey } from './src/options';
 import { colors } from './src/theme';
 import PrefetchWarmup from './src/thoughtspot/PrefetchWarmup';
+import { useLayout } from './src/ui/useLayout';
 
 const TABS: { key: TabKey; label: string }[] = [
   { key: 'guide', label: 'Guide' },
@@ -35,6 +36,7 @@ const TABS: { key: TabKey; label: string }[] = [
 
 export default function App() {
   const [tab, setTab] = useState<TabKey>('guide');
+  const { isShort } = useLayout(); // landscape: one-line header, more room for embeds
   // Selected option per tab (lifted here so the Guide can open a specific one)
   const [dashboardOption, setDashboardOption] = useState<OptionKey>('liveboardNativeSdk');
   const [assistantOption, setAssistantOption] = useState<OptionKey>('mcpEmbeddedCharts');
@@ -68,8 +70,8 @@ export default function App() {
     <SafeAreaProvider>
       <SafeAreaView style={styles.root} edges={['top', 'bottom']}>
         <StatusBar style="light" />
-        <View style={styles.header}>
-          <Text style={styles.brand}>▲ Northpeak Outfitters</Text>
+        <View style={[styles.header, isShort && styles.headerShort]}>
+          <Text style={[styles.brand, isShort && styles.brandShort]}>▲ Northpeak Outfitters</Text>
           <Text style={styles.subtitle}>ThoughtSpot mobile embedding · {TABS.find((t) => t.key === tab)!.label}</Text>
         </View>
 
@@ -107,6 +109,8 @@ const styles = StyleSheet.create({
   header: { backgroundColor: colors.brandDark, paddingHorizontal: 16, paddingTop: 8, paddingBottom: 12 },
   brand: { color: '#fff', fontSize: 20, fontWeight: '800', letterSpacing: 0.3 },
   subtitle: { color: '#BFD8CF', fontSize: 12, marginTop: 2 },
+  headerShort: { flexDirection: 'row', alignItems: 'baseline', gap: 12, paddingTop: 4, paddingBottom: 6 },
+  brandShort: { fontSize: 16 },
   screens: { flex: 1 },
   screen: { ...StyleSheet.absoluteFill, backgroundColor: colors.background },
   hidden: { opacity: 0, zIndex: -1 },

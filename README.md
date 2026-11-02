@@ -113,7 +113,7 @@ Three ways to show the app on a shared screen, all through Android Studio:
 3. Run `npm run demo:usb`.
 4. In Android Studio, open **View → Tool Windows → Running Devices** and click **+**, then pick your phone. It now appears in a window you can drive with the mouse.
 
-**On tablets** the app adapts: it turns to landscape, the Guide shows two columns, the chat stays a readable centred column, and option 2 renders the Liveboard at full size. The `useLayout()` hook in [`app/src/ui/useLayout.ts`](app/src/ui/useLayout.ts) decides this, using Android's own rule: smallest side ≥ 600dp.
+**On tablets** the app adapts: it turns to landscape, the Guide shows two columns, the chat stays a readable centred column, and option 2 renders the Liveboard at full size. In landscape the app's own header and option bar shrink to one line each, to leave the embeds more height, and Spotter zooms out to fit its 580px minimum height. The `useLayout()` hook in [`app/src/ui/useLayout.ts`](app/src/ui/useLayout.ts) decides this, using Android's own rule (smallest side ≥ 600dp = tablet).
 
 **Tips**
 - **Warm up first.** The Dashboard pre-renders at launch (see *Making Liveboards load faster*), but open every tab and option once before the meeting. Everything stays loaded while the app is open, so the demo is instant afterwards.
@@ -254,7 +254,12 @@ new SpotterEmbed('#root', {
 }).render();
 ```
 
-**Use the new Spotter experience on phones.** The classic Spotter UI has a desktop minimum width, so in portrait it scrolls sideways. The redesigned UI is responsive and fits. On 26.11+, the newest surface is `spotterExperienceVersion: SpotterExperienceVersion.SPOTTER_2026_11`. Don't force a width with zoom or CSS overrides: those break whenever ThoughtSpot ships a UI update.
+Two mobile rules, both without touching ThoughtSpot's CSS:
+
+1. **Use the new Spotter experience.** The classic Spotter UI has a desktop minimum width, so in portrait it scrolls sideways. The redesigned UI is responsive and fits. On 26.11+, the newest surface is `spotterExperienceVersion: SpotterExperienceVersion.SPOTTER_2026_11`.
+2. **Give it at least 580px of height.** ThoughtSpot's embedded app has a 580px minimum height. In a shorter frame, such as a tablet in landscape (about 420px left for Spotter), the top of Spotter is cut off. On short screens the app zooms the page out just enough for 580px to fit (`viewportScale`, measured once on first layout), the same technique ThoughtSpot's React Native SDK uses for Liveboards. Spotter keeps its own layout, fully visible. On phones in portrait the zoom is 1.
+
+Don't override ThoughtSpot's CSS to force a size: that breaks whenever ThoughtSpot ships a UI update.
 
 ### ④⑤ Headless Spotter via the Spotter MCP Server
 
@@ -346,6 +351,8 @@ curl https://api.anthropic.com/v1/messages \
 | "Backend has no POST /api/…" | The app is newer than the backend that's running. Restart it (`npm start`). |
 | Token works but Spotter returns 400, or embeds show nothing | The token's Org doesn't hold the objects. See *Orgs* above. |
 | Spotter scrolls sideways | The classic Spotter UI. Turn on `updatedSpotterExperience`. |
+| Top of Spotter cut off (tablet in landscape) | Spotter needs at least 580px of height. Zoom the page to fit, as `SpotterScreen.tsx` does. |
+| Inspect what's inside a WebView | In development builds, open `chrome://inspect` in Chrome on your Mac: every app WebView is listed (`webviewDebuggingEnabled`). |
 | Liveboard spinner for minutes on the emulator | The emulator is slow; a phone takes seconds. For live demos, mirror a USB phone (`npm run demo:usb`). |
 | White bands over charts on the emulator | An emulator graphics glitch; real devices don't show it. |
 | Expo Go shows a developer menu on launch | Expo Go's own menu on first launch: close it. |

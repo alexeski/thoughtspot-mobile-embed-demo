@@ -3,10 +3,12 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { OPTIONS, Option, OptionKey, optionsForTab } from '../options';
 import { colors } from '../theme';
+import { useLayout } from './useLayout';
 
 // The bar at the top of each screen: a toggle between the options that solve
 // the same problem, plus a caption saying which technique is on screen and
-// which file implements it – handy when presenting.
+// which file implements it – handy when presenting. On short screens
+// (landscape) the caption moves onto the toggle's line to save height.
 export default function OptionPicker({
   tab,
   value,
@@ -20,6 +22,13 @@ export default function OptionPicker({
 }) {
   const keys = optionsForTab(tab);
   const current = OPTIONS[value];
+  const { isShort } = useLayout();
+  const caption = (
+    <View style={isShort && styles.inlineCaption}>
+      <Text style={styles.how} numberOfLines={isShort ? 1 : 2}>{current.how}</Text>
+      <Text style={styles.file} numberOfLines={1}>{current.file}</Text>
+    </View>
+  );
 
   return (
     <View style={styles.bar}>
@@ -41,10 +50,10 @@ export default function OptionPicker({
         ) : (
           <Text style={styles.single}>{current.number}. {current.label}</Text>
         )}
+        {isShort && caption}
         {right}
       </View>
-      <Text style={styles.how} numberOfLines={2}>{current.how}</Text>
-      <Text style={styles.file}>{current.file}</Text>
+      {!isShort && caption}
     </View>
   );
 }
@@ -68,7 +77,8 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderColor: colors.border,
   },
-  row: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 },
+  row: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4, gap: 12 },
+  inlineCaption: { flex: 1 },
   toggle: {
     flexDirection: 'row',
     backgroundColor: colors.surface,

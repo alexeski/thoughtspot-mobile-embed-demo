@@ -41,10 +41,11 @@ type Props = {
   // startAutoMCPFrameRenderer, prefetch…), the #root element, and post(msg).
   script: string;
   onMessage?: (msg: any) => void;
-  // Page zoom. 1 = the phone's real width – right for responsive UIs such as
-  // the new Spotter experience. Liveboards lay out tiles on a grid made for
-  // wider screens, so ThoughtSpot's own React Native SDK renders them at 0.725
-  // (a ~570px-wide page on a 412px phone); option 2 does the same.
+  // Page zoom. 1 = the device's real size – right for responsive UIs such as
+  // the new Spotter experience. Below 1 the page gets more room than the screen:
+  // ThoughtSpot's own React Native SDK renders Liveboards at 0.725 (a ~570px-wide
+  // page on a 412px phone) – option 2 does the same – and Spotter zooms out on
+  // short screens to get the 580px of height it needs.
   viewportScale?: number;
   background?: string;
   style?: StyleProp<ViewStyle>;
@@ -147,6 +148,7 @@ export default function ThoughtSpotWebView({
       javaScriptEnabled
       domStorageEnabled
       nestedScrollEnabled={nestedScrollEnabled}
+      webviewDebuggingEnabled={__DEV__} // inspect the page from Chrome: chrome://inspect
       style={[{ backgroundColor: background }, style]}
     />
   );
