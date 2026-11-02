@@ -32,6 +32,9 @@ init({
   authType: AuthType.TrustedAuthTokenCookieless,
   getAuthToken,
   customizations: thoughtSpotCustomizations,
+  // Prefetch ThoughtSpot's static files. The React Native SDK passes this
+  // config to the web SDK in its shell page, which then calls prefetch().
+  callPrefetch: true,
 });
 
 export default function LiveboardNativeSdk({ ref }: { ref?: React.Ref<LiveboardHandle> }) {

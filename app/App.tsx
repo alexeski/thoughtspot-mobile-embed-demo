@@ -21,8 +21,10 @@ import AssistantScreen from './src/features/assistant/AssistantScreen';
 import DashboardScreen from './src/features/dashboard/DashboardScreen';
 import GuideScreen from './src/features/guide/GuideScreen';
 import SpotterScreen from './src/features/spotter/SpotterScreen';
+import { PRERENDER_DASHBOARD } from './src/config';
 import { OPTIONS, OptionKey, TabKey } from './src/options';
 import { colors } from './src/theme';
+import PrefetchWarmup from './src/thoughtspot/PrefetchWarmup';
 
 const TABS: { key: TabKey; label: string }[] = [
   { key: 'guide', label: 'Guide' },
@@ -36,8 +38,11 @@ export default function App() {
   // Selected option per tab (lifted here so the Guide can open a specific one)
   const [dashboardOption, setDashboardOption] = useState<OptionKey>('liveboardNativeSdk');
   const [assistantOption, setAssistantOption] = useState<OptionKey>('mcpEmbeddedCharts');
-  // Tabs are mounted on first visit, then kept alive so embeds and chats keep their state
-  const [visited, setVisited] = useState<Set<TabKey>>(new Set(['guide']));
+  // Tabs are mounted on first visit, then kept alive so embeds and chats keep their state.
+  // The Dashboard is pre-rendered at launch (see PRERENDER_DASHBOARD in config.ts).
+  const [visited, setVisited] = useState<Set<TabKey>>(
+    new Set(PRERENDER_DASHBOARD ? ['guide', 'dashboard'] : ['guide']),
+  );
 
   function show(next: TabKey) {
     setVisited((v) => new Set(v).add(next));
@@ -68,11 +73,22 @@ export default function App() {
           <Text style={styles.subtitle}>ThoughtSpot mobile embedding · {TABS.find((t) => t.key === tab)!.label}</Text>
         </View>
 
-        {TABS.filter((t) => visited.has(t.key)).map((t) => (
-          <View key={t.key} style={[styles.screen, t.key !== tab && styles.hidden]}>
-            {screens[t.key]}
-          </View>
-        ))}
+        {/* Prefetch ThoughtSpot's static files right away (options 2–4) */}
+        <PrefetchWarmup />
+
+        <View style={styles.screens}>
+          {TABS.filter((t) => visited.has(t.key)).map((t) => (
+            // Hidden tabs stay laid out at full size (not display: none), so a
+            // pre-rendered Liveboard keeps loading in the background.
+            <View
+              key={t.key}
+              style={[styles.screen, t.key !== tab && styles.hidden]}
+              pointerEvents={t.key === tab ? 'auto' : 'none'}
+            >
+              {screens[t.key]}
+            </View>
+          ))}
+        </View>
 
         <View style={styles.tabBar}>
           {TABS.map((t) => (
@@ -91,8 +107,9 @@ const styles = StyleSheet.create({
   header: { backgroundColor: colors.brandDark, paddingHorizontal: 16, paddingTop: 8, paddingBottom: 12 },
   brand: { color: '#fff', fontSize: 20, fontWeight: '800', letterSpacing: 0.3 },
   subtitle: { color: '#BFD8CF', fontSize: 12, marginTop: 2 },
-  screen: { flex: 1, backgroundColor: colors.background },
-  hidden: { display: 'none' },
+  screens: { flex: 1 },
+  screen: { ...StyleSheet.absoluteFill, backgroundColor: colors.background },
+  hidden: { opacity: 0, zIndex: -1 },
   tabBar: { flexDirection: 'row', backgroundColor: colors.surface, borderTopWidth: 1, borderColor: colors.border },
   tab: { flex: 1, alignItems: 'center', paddingVertical: 12 },
   tabLabel: { color: colors.muted, fontWeight: '600' },

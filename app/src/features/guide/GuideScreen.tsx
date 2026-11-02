@@ -5,6 +5,7 @@ import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-nati
 
 import { OPTIONS, OptionKey, optionsForTab } from '../../options';
 import { colors } from '../../theme';
+import { useLayout } from '../../ui/useLayout';
 
 const SECTIONS = [
   { tab: 'dashboard', title: 'Dashboards', intro: 'Embed an existing Liveboard.' },
@@ -13,6 +14,8 @@ const SECTIONS = [
 ] as const;
 
 export default function GuideScreen({ onOpen }: { onOpen: (key: OptionKey) => void }) {
+  const { isWide } = useLayout(); // tablets / landscape: option cards side by side
+
   return (
     <ScrollView contentContainerStyle={styles.page}>
       <Text style={styles.h1}>Five ways to put ThoughtSpot in a mobile app</Text>
@@ -25,23 +28,25 @@ export default function GuideScreen({ onOpen }: { onOpen: (key: OptionKey) => vo
         <View key={section.tab} style={styles.section}>
           <Text style={styles.h2}>{section.title}</Text>
           <Text style={styles.sectionIntro}>{section.intro}</Text>
-          {optionsForTab(section.tab).map((key) => {
-            const o = OPTIONS[key];
-            return (
-              <TouchableOpacity key={key} style={styles.card} onPress={() => onOpen(key)}>
-                <View style={styles.cardHeader}>
-                  <Text style={styles.badge}>{o.number}</Text>
-                  <Text style={styles.cardTitle}>{o.title}</Text>
-                </View>
-                <Text style={styles.label}>How</Text>
-                <Text style={styles.p}>{o.how}</Text>
-                <Text style={styles.label}>When to use it</Text>
-                <Text style={styles.p}>{o.when}</Text>
-                <Text style={styles.file}>{o.file}</Text>
-                <Text style={styles.open}>Open →</Text>
-              </TouchableOpacity>
-            );
-          })}
+          <View style={[styles.cardList, isWide && styles.columns]}>
+            {optionsForTab(section.tab).map((key) => {
+              const o = OPTIONS[key];
+              return (
+                <TouchableOpacity key={key} style={[styles.card, isWide && styles.cardHalf]} onPress={() => onOpen(key)}>
+                  <View style={styles.cardHeader}>
+                    <Text style={styles.badge}>{o.number}</Text>
+                    <Text style={styles.cardTitle}>{o.title}</Text>
+                  </View>
+                  <Text style={styles.label}>How</Text>
+                  <Text style={styles.p}>{o.how}</Text>
+                  <Text style={styles.label}>When to use it</Text>
+                  <Text style={styles.p}>{o.when}</Text>
+                  <Text style={styles.file}>{o.file}</Text>
+                  <Text style={styles.open}>Open →</Text>
+                </TouchableOpacity>
+              );
+            })}
+          </View>
         </View>
       ))}
     </ScrollView>
@@ -54,6 +59,9 @@ const styles = StyleSheet.create({
   h2: { fontSize: 16, fontWeight: '700', color: colors.brand },
   p: { fontSize: 13, lineHeight: 19, color: colors.text },
   section: { marginTop: 12, gap: 8 },
+  cardList: { gap: 8 },
+  columns: { flexDirection: 'row', flexWrap: 'wrap' },
+  cardHalf: { flexBasis: '48%', flexGrow: 1 },
   sectionIntro: { fontSize: 13, color: colors.muted },
   card: {
     backgroundColor: colors.surface,

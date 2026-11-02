@@ -15,6 +15,7 @@ import { StyleSheet, View } from 'react-native';
 import { LIVEBOARD_ID, LIVEBOARD_TAB_ID } from '../../config';
 import ThoughtSpotWebView, { ThoughtSpotWebViewHandle } from '../../thoughtspot/ThoughtSpotWebView';
 import LoadingOverlay from '../../ui/LoadingOverlay';
+import { useLayout } from '../../ui/useLayout';
 import type { LiveboardHandle } from './types';
 
 // Runs inside the WebView, after init() (see ThoughtSpotWebView).
@@ -38,6 +39,7 @@ const script = `
 `;
 
 export default function LiveboardWebSdk({ ref }: { ref?: React.Ref<LiveboardHandle> }) {
+  const { isTablet } = useLayout();
   const webRef = useRef<ThoughtSpotWebViewHandle>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -57,12 +59,13 @@ export default function LiveboardWebSdk({ ref }: { ref?: React.Ref<LiveboardHand
 
   return (
     <View style={styles.container}>
-      {/* 0.725 = the zoom ThoughtSpot's React Native SDK uses for Liveboards, so options 1 and 2 match */}
+      {/* Phones: 0.725, the zoom ThoughtSpot's React Native SDK uses for Liveboards, so options 1 and 2
+          match. Tablets have room for the real size – something option 2 can choose and option 1 can't. */}
       <ThoughtSpotWebView
         ref={webRef}
         script={script}
         onMessage={onMessage}
-        viewportScale={0.725}
+        viewportScale={isTablet ? 1 : 0.725}
         style={styles.webview}
       />
       <LoadingOverlay loading={loading} error={error} label="Loading Liveboard…" />

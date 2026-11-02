@@ -38,7 +38,7 @@ export type ThoughtSpotWebViewHandle = {
 type Props = {
   // JavaScript that runs once the SDK is initialised. It can use the SDK's
   // exports (LiveboardEmbed, SpotterEmbed, EmbedEvent, HostEvent, Action,
-  // startAutoMCPFrameRenderer…), the #root element, and post(msg).
+  // startAutoMCPFrameRenderer, prefetch…), the #root element, and post(msg).
   script: string;
   onMessage?: (msg: any) => void;
   // Page zoom. 1 = the phone's real width – right for responsive UIs such as
@@ -69,6 +69,7 @@ function buildHtml(script: string, background: string, scale: number) {
     const {
       init, AuthType, EmbedEvent, HostEvent, Action,
       LiveboardEmbed, SpotterEmbed, startAutoMCPFrameRenderer,
+      prefetch, PrefetchFeatures,
     } = window.tsembed;
     const post = (msg) => window.ReactNativeWebView.postMessage(JSON.stringify(msg));
 

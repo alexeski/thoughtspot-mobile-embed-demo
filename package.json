@@ -3,8 +3,12 @@
   "private": true,
   "description": "Teaching app: five ways to embed ThoughtSpot in a React Native mobile app",
   "scripts": {
+    "help": "node scripts/demo.mjs --help",
     "setup": "npm --prefix server install && npm --prefix app install",
-    "demo": "node scripts/demo.mjs",
-    "demo:phone": "node scripts/demo.mjs --phone"
+    "demo": "node scripts/demo.mjs --device=phone",
+    "demo:tablet": "node scripts/demo.mjs --device=tablet",
+    "demo:usb": "node scripts/demo.mjs --device=usb",
+    "backend": "npm --prefix server start",
+    "app": "npm --prefix app start"
   }
 }

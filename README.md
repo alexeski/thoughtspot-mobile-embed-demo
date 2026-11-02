@@ -49,18 +49,34 @@ A trusted-auth secret key only works for **its own Org**, so it must come from t
 
 ### 2. Start the demo – one command
 
-```bash
-npm run demo           # Android emulator (boots your first Android Studio virtual device if none is running)
-npm run demo:phone     # your Android phone over USB
-```
+All commands run from the project folder. `npm run help` prints this list.
 
-[`scripts/demo.mjs`](scripts/demo.mjs) checks the setup, finds or boots the device, forwards the device's `localhost:4000` and `:8081` to your Mac over USB (`adb reverse`, so no Wi-Fi needed), starts the backend, then starts Expo and opens the app. Press `r` in that terminal to reload the app, and Ctrl+C to stop the backend and Expo (the emulator stays open). Options: `AVD=<name>` picks the virtual device; `BACKEND_PORT` and `METRO_PORT` change the ports.
+| Command | What it does |
+|---|---|
+| `npm run setup` | Install dependencies (`server/` and `app/`). Run once. |
+| `npm run demo` | Start the demo on the **phone emulator** |
+| `npm run demo:tablet` | Start the demo on the **tablet emulator** (landscape) |
+| `npm run demo:usb` | Start the demo on your **real Android phone** over USB |
+| `npm run backend` | Start only the backend (port 4000) |
+| `npm run app` | Start only Expo: scan the QR code with Expo Go, or press `a` for an emulator |
+| `npm run help` | Print this list |
+
+Each `demo` command ([`scripts/demo.mjs`](scripts/demo.mjs)) does the same five steps:
+1. Checks the setup.
+2. Picks the device, booting the Android Studio virtual phone or tablet if it isn't running.
+3. Forwards the device's `localhost:4000` and `:8081` to your Mac over USB (`adb reverse`, so no Wi-Fi needed).
+4. Starts the backend.
+5. Starts Expo, installs Expo Go on the device if needed, and opens the app on **that** device, even when several are running.
+
+Press `r` in that terminal to reload the app, and Ctrl+C to stop the backend and Expo (emulators stay open).
+
+Phone or tablet is decided the way Android does it: a virtual device whose smallest side is at least 600dp is a tablet. To force a specific one, use `AVD=<name> npm run demo`. `BACKEND_PORT` and `METRO_PORT` change the ports.
 
 ### Or start the pieces yourself
 
 ```bash
-cd server && npm start            # backend on http://0.0.0.0:4000
-cd app && npx expo start          # then scan the QR code with Expo Go, or press a for the emulator
+npm run backend       # backend on http://0.0.0.0:4000
+npm run app           # then scan the QR code with Expo Go, or press a for the emulator
 ```
 
 Over Wi-Fi, the app finds the backend on its own: it reuses the laptop IP that Expo uses, on port 4000 (see [`app/src/config.ts`](app/src/config.ts)). For a deployed backend, set `EXPO_PUBLIC_BACKEND_URL`.
@@ -80,28 +96,30 @@ On a client's instance, use their own domain instead, for example `https://mobil
 
 ## Presenting the app on your computer
 
-Two ways to show the app on a shared screen, both through Android Studio:
+Three ways to show the app on a shared screen, all through Android Studio:
 
-| | **Emulator** (`npm run demo`) | **Mirrored phone** (`npm run demo:phone`) |
-|---|---|---|
-| What the audience sees | A virtual phone in a window on your Mac | Your real phone, mirrored in Android Studio |
-| Speed | Slow: the first Liveboard takes 1–3 minutes | Real-phone speed: seconds |
-| Needs | Nothing extra | The phone on a USB cable, with USB debugging on |
-| Best for | Rehearsing, screenshots, no phone at hand | Live client demos |
+| | **Phone emulator** (`npm run demo`) | **Tablet emulator** (`npm run demo:tablet`) | **Mirrored phone** (`npm run demo:usb`) |
+|---|---|---|---|
+| What the audience sees | A virtual phone in a window on your Mac | A virtual tablet, in landscape | Your real phone, mirrored in Android Studio |
+| Speed | Slow: the first Liveboard takes 1–3 minutes | Same as the phone emulator | Real-phone speed: seconds |
+| Needs | A virtual phone in Device Manager | A virtual tablet in Device Manager | The phone on a USB cable, with USB debugging on |
+| Best for | Rehearsing, screenshots | Showing the tablet layout (two-column Guide, wider Liveboard) | Live client demos |
 
-**Emulator.** Run `npm run demo`. To manage virtual devices yourself, use Android Studio → **Device Manager** (▶ starts a device, ✏️ → *Show Advanced Settings* raises its RAM, which helps with Liveboards).
+**Emulators.** Create virtual devices in Android Studio → **Device Manager** → **+** (Create Virtual Device): pick a *Phone* or *Tablet* profile and a system image. ▶ starts a device. ✏️ → *Show Advanced Settings* raises its RAM, which helps with Liveboards. The demo commands find and boot them for you.
 
 **Mirrored phone.**
 1. On the phone, go to **Settings → About phone** and tap **Build number** 7 times to unlock Developer options. Then go to **Settings → System → Developer options** and turn on **USB debugging**.
 2. Plug in the phone and accept *Allow USB debugging?* on it.
-3. Run `npm run demo:phone`.
+3. Run `npm run demo:usb`.
 4. In Android Studio, open **View → Tool Windows → Running Devices** and click **+**, then pick your phone. It now appears in a window you can drive with the mouse.
 
+**On tablets** the app adapts: it turns to landscape, the Guide shows two columns, the chat stays a readable centred column, and option 2 renders the Liveboard at full size. The `useLayout()` hook in [`app/src/ui/useLayout.ts`](app/src/ui/useLayout.ts) decides this, using Android's own rule: smallest side ≥ 600dp.
+
 **Tips**
-- **Warm up first.** Open every tab and option once before the meeting. Tabs stay loaded while the app is open, so the demo is instant afterwards.
+- **Warm up first.** The Dashboard pre-renders at launch (see *Making Liveboards load faster*), but open every tab and option once before the meeting. Everything stays loaded while the app is open, so the demo is instant afterwards.
 - **Side by side.** Put the device window next to your editor and open the file named in each screen's option bar, so the code is next to its result.
 - **Recording.** Use the emulator's camera button for screenshots, or **⋯ (Extended controls) → Record and playback** for a video.
-- **The blue gear** in the corner is Expo Go's developer button, not part of the app. It appears only in development.
+- **No developer clutter.** The demo commands open the app without Expo Go's developer intro or floating gear button. If you open it another way and see a blue gear, that's Expo Go's, not part of the app. ⌘M (or Ctrl+M) opens Expo's developer menu.
 - **"Port … is already in use"** means another backend or Expo is still running, for example from an earlier terminal. Stop it with Ctrl+C there, or `kill <PID>` as the message says.
 
 ---
@@ -109,8 +127,8 @@ Two ways to show the app on a shared screen, both through Android Studio:
 ## Project structure
 
 ```
-package.json                      npm run setup · demo · demo:phone
-scripts/demo.mjs                  one-command demo launcher (device, port forwarding, backend, Expo)
+package.json                      npm run help · setup · demo · demo:tablet · demo:usb · backend · app
+scripts/demo.mjs                  demo launcher: device, port forwarding, backend, Expo
 app/
   App.tsx                         shell: header + Guide / Dashboard / Spotter / Assistant tabs
   .env                            Liveboard / tab / model IDs (read by src/config.ts)
@@ -122,7 +140,8 @@ app/
     theme.ts                      brand colours + ThoughtSpot CSS variables
     thoughtspot/
       ThoughtSpotWebView.tsx      ★ the web SDK in a WebView: page, origin, token bridge, messages
-    ui/                           OptionPicker · LoadingOverlay · Markdown
+      PrefetchWarmup.tsx          prefetch() at app launch (options 2–4)
+    ui/                           OptionPicker · LoadingOverlay · Markdown · useLayout (phone / tablet)
     features/
       guide/GuideScreen.tsx       overview of all options
       dashboard/
@@ -170,6 +189,17 @@ Callers pass only the few lines of SDK code to run, for example:
 ```tsx
 <ThoughtSpotWebView script={`new SpotterEmbed('#root', { worksheetId: '…' }).render()`} />
 ```
+
+### Making Liveboards load faster: prefetch and pre-render
+
+ThoughtSpot documents two techniques, and the app uses both ([`config.ts`](app/src/config.ts) → `PRERENDER_DASHBOARD`):
+
+| Technique | What it does | Where | Gain |
+|---|---|---|---|
+| **Prefetch** | Downloads ThoughtSpot's static files (JS/CSS) before the user opens an embed | Option 1: `callPrefetch: true` in the RN SDK's `init()`. Options 2–4: an invisible WebView at app launch calls `prefetch(host, [PrefetchFeatures.LiveboardEmbed])` ([`PrefetchWarmup.tsx`](app/src/thoughtspot/PrefetchWarmup.tsx)) | Small: saves the file downloads only |
+| **Pre-render** | Loads the Liveboard itself ahead of time and keeps it alive | The Dashboard tab mounts in the background at launch; hidden tabs and Liveboard options stay mounted, so they are never rebuilt | Large: the Liveboard is already on screen when the user opens it |
+
+Prefetch for options 2–4 works because their WebViews share one page origin, and so one cache (see `PAGE_ORIGIN` in `ThoughtSpotWebView.tsx`). Hidden screens use `opacity: 0` rather than `display: none`, so a pre-rendered Liveboard keeps loading in the background. The trade-off: pre-rendering spends one Liveboard load at launch even if the user never opens the Dashboard.
 
 ---
 
@@ -316,7 +346,8 @@ curl https://api.anthropic.com/v1/messages \
 | "Backend has no POST /api/…" | The app is newer than the backend that's running. Restart it (`npm start`). |
 | Token works but Spotter returns 400, or embeds show nothing | The token's Org doesn't hold the objects. See *Orgs* above. |
 | Spotter scrolls sideways | The classic Spotter UI. Turn on `updatedSpotterExperience`. |
-| Liveboard spinner for minutes on the emulator | The emulator is slow; a phone takes seconds. For live demos, mirror a USB phone (`npm run demo:phone`). |
+| Liveboard spinner for minutes on the emulator | The emulator is slow; a phone takes seconds. For live demos, mirror a USB phone (`npm run demo:usb`). |
+| White bands over charts on the emulator | An emulator graphics glitch; real devices don't show it. |
 | Expo Go shows a developer menu on launch | Expo Go's own menu on first launch: close it. |
 
 ## References

@@ -14,6 +14,14 @@ export const LIVEBOARD_TAB_ID = process.env.EXPO_PUBLIC_LIVEBOARD_TAB_ID || unde
 // Spotter (native UI and MCP agent) is pinned to the same model.
 export const MODEL_ID = process.env.EXPO_PUBLIC_MODEL_ID ?? 'cd252e5c-b552-49a8-821d-3eadaa049cca';
 
+// ── Performance ──────────────────────────────────────────────────────────────
+// Pre-render: load the Dashboard tab in the background at app launch, so the
+// Liveboard is ready by the time the user opens it. This is the mobile version
+// of ThoughtSpot's "pre-render" strategy, and the biggest speed-up for a
+// Liveboard. Costs one Liveboard load at launch even if the tab is never opened.
+// (Static files are also prefetched at launch – see thoughtspot/PrefetchWarmup.tsx.)
+export const PRERENDER_DASHBOARD = true;
+
 // ── Our own backend (see ../server) ──────────────────────────────────────────
 // The backend keeps ThoughtSpot secrets off the phone: it mints auth tokens
 // and talks to the Spotter MCP Server on the app's behalf.

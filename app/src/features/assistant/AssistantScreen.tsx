@@ -98,20 +98,22 @@ export default function AssistantScreen({
         )}
       </ScrollView>
 
-      <View style={styles.inputRow}>
-        <TextInput
-          style={styles.input}
-          value={input}
-          onChangeText={setInput}
-          placeholder="Ask about sales, products, stores…"
-          placeholderTextColor={colors.muted}
-          onSubmitEditing={() => send(input)}
-          returnKeyType="send"
-          editable={!busy}
-        />
-        <TouchableOpacity style={[styles.send, busy && { opacity: 0.4 }]} onPress={() => send(input)} disabled={busy}>
-          <Text style={styles.sendText}>Ask</Text>
-        </TouchableOpacity>
+      <View style={styles.inputBar}>
+        <View style={styles.inputRow}>
+          <TextInput
+            style={styles.input}
+            value={input}
+            onChangeText={setInput}
+            placeholder="Ask about sales, products, stores…"
+            placeholderTextColor={colors.muted}
+            onSubmitEditing={() => send(input)}
+            returnKeyType="send"
+            editable={!busy}
+          />
+          <TouchableOpacity style={[styles.send, busy && { opacity: 0.4 }]} onPress={() => send(input)} disabled={busy}>
+            <Text style={styles.sendText}>Ask</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     </KeyboardAvoidingView>
   );
@@ -120,7 +122,8 @@ export default function AssistantScreen({
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.background },
   caption: { color: colors.muted, fontSize: 13 },
-  list: { padding: 16, gap: 12 },
+  // On tablets the conversation stays a readable column instead of spanning the screen
+  list: { padding: 16, gap: 12, width: '100%', maxWidth: 820, alignSelf: 'center' },
   intro: { color: colors.text, fontSize: 16, fontWeight: '600', marginBottom: 4 },
   chip: {
     backgroundColor: colors.surface,
@@ -136,14 +139,9 @@ const styles = StyleSheet.create({
   userText: { color: '#fff', fontSize: 15 },
   spotter: { backgroundColor: colors.surface, alignSelf: 'flex-start', width: '92%' },
   step: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  inputRow: {
-    flexDirection: 'row',
-    gap: 8,
-    padding: 12,
-    borderTopWidth: 1,
-    borderColor: colors.border,
-    backgroundColor: colors.surface,
-  },
+  inputBar: { padding: 12, borderTopWidth: 1, borderColor: colors.border, backgroundColor: colors.surface },
+  // Same width as the conversation column above
+  inputRow: { flexDirection: 'row', gap: 8, width: '100%', maxWidth: 820, alignSelf: 'center' },
   input: {
     flex: 1,
     backgroundColor: colors.background,
