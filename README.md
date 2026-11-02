@@ -35,33 +35,35 @@ All five use the **(Sample) Retail - Apparel** model and the **Retail Sales Perf
 
 ## Run it
 
-**You need:** Node 20+, and either the **Expo Go** app on your phone (on the same Wi-Fi as your laptop) or an Android emulator.
+**You need:** Node 20+, and either **Android Studio** (for the emulator, or to mirror a USB phone) or the **Expo Go** app on your phone.
 
-### 1. Backend
+### 1. One-time setup
 
 ```bash
-cd server
-cp .env.example .env      # then fill in TS_USERNAME and TS_SECRET_KEY (or TS_PASSWORD)
-npm install
-npm start                 # → Northpeak backend on http://0.0.0.0:4000
+cp server/.env.example server/.env     # fill in TS_USERNAME and TS_SECRET_KEY (or TS_PASSWORD)
+cp app/.env.example app/.env           # Liveboard / model IDs – no secrets (EXPO_PUBLIC_* ships inside the app)
+npm run setup                          # installs server/ and app/ dependencies
 ```
 
 A trusted-auth secret key only works for **its own Org**, so it must come from the Org that holds the Liveboard and model.
 
-### 2. App
+### 2. Start the demo – one command
 
 ```bash
-cd app
-cp .env.example .env      # Liveboard / model IDs (no secrets: EXPO_PUBLIC_* values ship inside the app)
-npm install
-npx expo start
+npm run demo           # Android emulator (boots your first Android Studio virtual device if none is running)
+npm run demo:phone     # your Android phone over USB
 ```
 
-- **Phone:** scan the QR code with Expo Go (Android) or the Camera app (iOS). The app finds the backend on its own: it reuses the laptop IP that Expo uses, on port 4000 (see [`app/src/config.ts`](app/src/config.ts)).
-- **Android emulator:** start a virtual device from Android Studio (Device Manager), then press **`a`** in the Expo terminal. Expo installs Expo Go on the emulator and opens the app. The emulator is much slower than a phone: allow a minute or more for the first Liveboard.
-- **Deployed backend:** set `EXPO_PUBLIC_BACKEND_URL`.
+[`scripts/demo.mjs`](scripts/demo.mjs) checks the setup, finds or boots the device, forwards the device's `localhost:4000` and `:8081` to your Mac over USB (`adb reverse`, so no Wi-Fi needed), starts the backend, then starts Expo and opens the app. Press `r` in that terminal to reload the app, and Ctrl+C to stop the backend and Expo (the emulator stays open). Options: `AVD=<name>` picks the virtual device; `BACKEND_PORT` and `METRO_PORT` change the ports.
 
-If the phone can't reach the laptop (office Wi-Fi often blocks it), use a USB cable: `adb reverse tcp:8081 tcp:8081 && adb reverse tcp:4000 tcp:4000`, then `npx expo start --localhost`.
+### Or start the pieces yourself
+
+```bash
+cd server && npm start            # backend on http://0.0.0.0:4000
+cd app && npx expo start          # then scan the QR code with Expo Go, or press a for the emulator
+```
+
+Over Wi-Fi, the app finds the backend on its own: it reuses the laptop IP that Expo uses, on port 4000 (see [`app/src/config.ts`](app/src/config.ts)). For a deployed backend, set `EXPO_PUBLIC_BACKEND_URL`.
 
 ### 3. ThoughtSpot security settings (already set on se-thoughtspot-cloud)
 
@@ -76,9 +78,39 @@ On a client's instance, use their own domain instead, for example `https://mobil
 
 ---
 
+## Presenting the app on your computer
+
+Two ways to show the app on a shared screen, both through Android Studio:
+
+| | **Emulator** (`npm run demo`) | **Mirrored phone** (`npm run demo:phone`) |
+|---|---|---|
+| What the audience sees | A virtual phone in a window on your Mac | Your real phone, mirrored in Android Studio |
+| Speed | Slow: the first Liveboard takes 1–3 minutes | Real-phone speed: seconds |
+| Needs | Nothing extra | The phone on a USB cable, with USB debugging on |
+| Best for | Rehearsing, screenshots, no phone at hand | Live client demos |
+
+**Emulator.** Run `npm run demo`. To manage virtual devices yourself, use Android Studio → **Device Manager** (▶ starts a device, ✏️ → *Show Advanced Settings* raises its RAM, which helps with Liveboards).
+
+**Mirrored phone.**
+1. On the phone, go to **Settings → About phone** and tap **Build number** 7 times to unlock Developer options. Then go to **Settings → System → Developer options** and turn on **USB debugging**.
+2. Plug in the phone and accept *Allow USB debugging?* on it.
+3. Run `npm run demo:phone`.
+4. In Android Studio, open **View → Tool Windows → Running Devices** and click **+**, then pick your phone. It now appears in a window you can drive with the mouse.
+
+**Tips**
+- **Warm up first.** Open every tab and option once before the meeting. Tabs stay loaded while the app is open, so the demo is instant afterwards.
+- **Side by side.** Put the device window next to your editor and open the file named in each screen's option bar, so the code is next to its result.
+- **Recording.** Use the emulator's camera button for screenshots, or **⋯ (Extended controls) → Record and playback** for a video.
+- **The blue gear** in the corner is Expo Go's developer button, not part of the app. It appears only in development.
+- **"Port … is already in use"** means another backend or Expo is still running, for example from an earlier terminal. Stop it with Ctrl+C there, or `kill <PID>` as the message says.
+
+---
+
 ## Project structure
 
 ```
+package.json                      npm run setup · demo · demo:phone
+scripts/demo.mjs                  one-command demo launcher (device, port forwarding, backend, Expo)
 app/
   App.tsx                         shell: header + Guide / Dashboard / Spotter / Assistant tabs
   .env                            Liveboard / tab / model IDs (read by src/config.ts)
@@ -284,7 +316,7 @@ curl https://api.anthropic.com/v1/messages \
 | "Backend has no POST /api/…" | The app is newer than the backend that's running. Restart it (`npm start`). |
 | Token works but Spotter returns 400, or embeds show nothing | The token's Org doesn't hold the objects. See *Orgs* above. |
 | Spotter scrolls sideways | The classic Spotter UI. Turn on `updatedSpotterExperience`. |
-| Liveboard spinner for minutes on the emulator | The emulator is slow; a phone takes seconds. |
+| Liveboard spinner for minutes on the emulator | The emulator is slow; a phone takes seconds. For live demos, mirror a USB phone (`npm run demo:phone`). |
 | Expo Go shows a developer menu on launch | Expo Go's own menu on first launch: close it. |
 
 ## References

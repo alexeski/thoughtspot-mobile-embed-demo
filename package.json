@@ -1,0 +1,10 @@
+{
+  "name": "thoughtspot-mobile-embed-demo",
+  "private": true,
+  "description": "Teaching app: five ways to embed ThoughtSpot in a React Native mobile app",
+  "scripts": {
+    "setup": "npm --prefix server install && npm --prefix app install",
+    "demo": "node scripts/demo.mjs",
+    "demo:phone": "node scripts/demo.mjs --phone"
+  }
+}
