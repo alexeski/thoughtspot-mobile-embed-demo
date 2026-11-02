@@ -7,7 +7,11 @@
 // use any web SDK version or feature the React Native SDK doesn't expose yet.
 //
 // Compare with LiveboardNativeSdk.tsx: same view config, same events, same
-// host event – only the plumbing differs.
+// host event – only the plumbing differs. One thing here option 1 can't do:
+// fullHeight. The frame grows to the Liveboard's height and the page scrolls;
+// from SDK 1.52 this also turns on lazy loading, so tiles load as they scroll
+// into view instead of all at once. (The React Native SDK doesn't expose
+// fullHeight yet.)
 // ─────────────────────────────────────────────────────────────────────────────
 import React, { useImperativeHandle, useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
@@ -15,8 +19,13 @@ import { StyleSheet, View } from 'react-native';
 import { LIVEBOARD_ID, LIVEBOARD_TAB_ID } from '../../config';
 import ThoughtSpotWebView, { ThoughtSpotWebViewHandle } from '../../thoughtspot/ThoughtSpotWebView';
 import LoadingOverlay from '../../ui/LoadingOverlay';
-import { useLayout } from '../../ui/useLayout';
 import type { LiveboardHandle } from './types';
+
+// The zoom ThoughtSpot's React Native SDK uses for Liveboards. It gives the
+// best layout at every screen size: a 412dp phone gets a ~570px page (one
+// column), a 600dp tablet in portrait ~830px (two columns, with
+// enable2ColumnLayout), a tablet in landscape ~1320px (the full 12-column grid).
+const LIVEBOARD_ZOOM = 0.725;
 
 // Runs inside the WebView, after init() (see ThoughtSpotWebView).
 const script = `
@@ -27,7 +36,11 @@ const script = `
     hideLiveboardHeader: true, // no filters on this Liveboard, so the header bar only takes space
     hideTabPanel: true,
     visibleActions: [Action.DrillDown, Action.AddFilter, Action.Share],
-    frameParams: { width: '100%', height: '100%' },
+    fullHeight: true, // one scroll bar (the page's) + lazy loading of tiles
+    // Without it, Liveboards jump from the 12-column grid (wider than ~1024px)
+    // straight to one column. This adds a two-column step for mid-size screens
+    // (tablets); phone widths stay one column.
+    enable2ColumnLayout: true,
   });
 
   // ④ Embed events, forwarded to React Native with post()
@@ -39,7 +52,6 @@ const script = `
 `;
 
 export default function LiveboardWebSdk({ ref }: { ref?: React.Ref<LiveboardHandle> }) {
-  const { isTablet } = useLayout();
   const webRef = useRef<ThoughtSpotWebViewHandle>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -59,13 +71,11 @@ export default function LiveboardWebSdk({ ref }: { ref?: React.Ref<LiveboardHand
 
   return (
     <View style={styles.container}>
-      {/* Phones: 0.725, the zoom ThoughtSpot's React Native SDK uses for Liveboards, so options 1 and 2
-          match. Tablets have room for the real size – something option 2 can choose and option 1 can't. */}
       <ThoughtSpotWebView
         ref={webRef}
         script={script}
         onMessage={onMessage}
-        viewportScale={isTablet ? 1 : 0.725}
+        viewportScale={LIVEBOARD_ZOOM}
         style={styles.webview}
       />
       <LoadingOverlay loading={loading} error={error} label="Loading Liveboard…" />

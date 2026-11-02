@@ -113,7 +113,7 @@ Three ways to show the app on a shared screen, all through Android Studio:
 3. Run `npm run demo:usb`.
 4. In Android Studio, open **View → Tool Windows → Running Devices** and click **+**, then pick your phone. It now appears in a window you can drive with the mouse.
 
-**On tablets** the app adapts: it turns to landscape, the Guide shows two columns, the chat stays a readable centred column, and option 2 renders the Liveboard at full size. In landscape the app's own header and option bar shrink to one line each, to leave the embeds more height, and Spotter zooms out to fit its 580px minimum height. The `useLayout()` hook in [`app/src/ui/useLayout.ts`](app/src/ui/useLayout.ts) decides this, using Android's own rule (smallest side ≥ 600dp = tablet).
+**On tablets** the app adapts: it turns to landscape, the Guide shows two columns, the chat stays a readable centred column, and the Liveboard switches to two columns in portrait or the full grid in landscape (see *Zoom and layout on every screen size*). In landscape the app's own header and option bar shrink to one line each, to leave the embeds more height, and Spotter zooms out to fit its 580px minimum height. The `useLayout()` hook in [`app/src/ui/useLayout.ts`](app/src/ui/useLayout.ts) decides the app's own layout.
 
 **Tips**
 - **Warm up first.** The Dashboard pre-renders at launch (see *Making Liveboards load faster*), but open every tab and option once before the meeting. Everything stays loaded while the app is open, so the demo is instant afterwards.
@@ -231,7 +231,8 @@ window.embed = new LiveboardEmbed('#root', {
   liveboardId: LIVEBOARD_ID,
   hideLiveboardHeader: true,
   visibleActions: [Action.DrillDown, Action.AddFilter, Action.Share],
-  frameParams: { width: '100%', height: '100%' },
+  fullHeight: true,            // the page scrolls, and tiles lazy-load as they scroll into view
+  enable2ColumnLayout: true,   // two columns on mid-size screens instead of one
 });
 embed.on(EmbedEvent.LiveboardRendered, () => post({ type: 'RENDERED' }));
 embed.render();
@@ -239,9 +240,17 @@ embed.render();
 
 and the host event from React Native: `webRef.current.run('embed.trigger(HostEvent.Reload)')`.
 
-**Compare 1 and 2 on stage:** same view config, same events, same host event; only the plumbing differs. Option 2 is exactly what you'd write on a website, so any web SDK version or feature works on day one.
+**Compare 1 and 2 on stage:** same view config, same events, same host event; only the plumbing differs. Option 2 is exactly what you'd write on a website, so any web SDK version or feature works on day one. A concrete example: `fullHeight`, which the React Native SDK doesn't expose yet. Since SDK 1.52 it also turns on lazy loading (`lazyLoadingForFullHeight`), so tiles load as the user scrolls instead of all at once.
 
-**Zoom.** Liveboards lay out tiles on a grid designed for wider screens. ThoughtSpot's own RN SDK shell page renders them at `initial-scale=0.725` (a ~570px-wide page on a 412px phone), and option 2 does the same (`viewportScale={0.725}`) so both look identical. Spotter's new UI is responsive, so options 3 and 4 run at scale 1.
+**Zoom and layout on every screen size.** ThoughtSpot's React Native SDK shell renders Liveboards at `initial-scale=0.725`, and option 2 does the same (`viewportScale={0.725}`). That fixed zoom, together with `enable2ColumnLayout`, gives the right layout everywhere (measured on the emulators):
+
+| Screen | Page width at 0.725 | Liveboard layout |
+|---|---|---|
+| Phone, 412dp | ~570px | One column |
+| Mid-size tablet in portrait, 600dp | ~830px | Two columns (with `enable2ColumnLayout`) |
+| Tablet in landscape, 960dp | ~1,320px | Full 12-column grid |
+
+At zoom 1 a tablet lands in ThoughtSpot's one-column band (600–960px), with very tall tiles. Without `enable2ColumnLayout`, Liveboards jump from the 12-column grid straight to one column. Spotter's new UI is responsive, so options 3 and 4 run at zoom 1, except that Spotter zooms out when its frame is shorter than 580px (see ③).
 
 ### ③ Spotter with the web SDK in a WebView
 
@@ -359,6 +368,7 @@ curl https://api.anthropic.com/v1/messages \
 
 ## References
 
+- [Responsive ThoughtSpot Embedding: Best Practice Guide](https://claude.ai/artifact/S8LSt7YUxPYFpkFPT2KexZ) – the companion write-up (web and mobile), updated with this app's findings
 - React Native Embed SDK: https://developers.thoughtspot.com/docs/embed-ts-mobile-react-native
 - LiveboardEmbed: https://developers.thoughtspot.com/docs/embed-liveboard
 - SpotterEmbed: https://developers.thoughtspot.com/docs/embed-spotter

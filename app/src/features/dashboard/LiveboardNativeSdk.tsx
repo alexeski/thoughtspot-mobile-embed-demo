@@ -56,6 +56,7 @@ export default function LiveboardNativeSdk({ ref }: { ref?: React.Ref<LiveboardH
         activeTabId={LIVEBOARD_TAB_ID}
         hideLiveboardHeader // no filters on this Liveboard, so the header bar only takes space
         hideTabPanel
+        enable2ColumnLayout // two columns on mid-size screens instead of one (see LiveboardWebSdk.tsx)
         visibleActions={[Action.DrillDown, Action.AddFilter, Action.Share]}
         // ④ Embed events: the embed tells the app what happened
         onLiveboardRendered={() => setLoading(false)}
