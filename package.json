@@ -8,6 +8,7 @@
     "demo": "node scripts/demo.mjs --device=phone",
     "demo:tablet": "node scripts/demo.mjs --device=tablet",
     "demo:usb": "node scripts/demo.mjs --device=usb",
+    "demo:wifi": "node scripts/demo.mjs --device=wifi",
     "backend": "npm --prefix server start",
     "app": "npm --prefix app start"
   }

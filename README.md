@@ -57,6 +57,7 @@ All commands run from the project folder. `npm run help` prints this list.
 | `npm run demo` | Start the demo on the **phone emulator** |
 | `npm run demo:tablet` | Start the demo on the **tablet emulator** (landscape) |
 | `npm run demo:usb` | Start the demo on your **real Android phone** over USB |
+| `npm run demo:wifi` | Start the demo on your **real phone over Wi-Fi**, no cable: scan the QR code with Expo Go |
 | `npm run backend` | Start only the backend (port 4000) |
 | `npm run app` | Start only Expo: scan the QR code with Expo Go, or press `a` for an emulator |
 | `npm run help` | Print this list |
@@ -67,6 +68,8 @@ Each `demo` command ([`scripts/demo.mjs`](scripts/demo.mjs)) does the same five 
 3. Forwards the device's `localhost:4000` and `:8081` to your Mac over USB (`adb reverse`, so no Wi-Fi needed).
 4. Starts the backend.
 5. Starts Expo, installs Expo Go on the device if needed, and opens the app on **that** device, even when several are running.
+
+`demo:wifi` skips steps 2 and 3 and needs no Android SDK. Expo serves on your Mac's Wi-Fi address and shows a QR code: open **Expo Go → Scan QR code** on the phone. The phone and Mac must be on the same Wi-Fi. If the phone can't connect, allow `node` when macOS asks about incoming connections, and avoid guest or office Wi-Fi that isolates devices (a phone hotspot works).
 
 Press `r` in that terminal to reload the app, and Ctrl+C to stop the backend and Expo (emulators stay open).
 
@@ -79,7 +82,7 @@ npm run backend       # backend on http://0.0.0.0:4000
 npm run app           # then scan the QR code with Expo Go, or press a for the emulator
 ```
 
-Over Wi-Fi, the app finds the backend on its own: it reuses the laptop IP that Expo uses, on port 4000 (see [`app/src/config.ts`](app/src/config.ts)). For a deployed backend, set `EXPO_PUBLIC_BACKEND_URL`.
+This is what `demo:wifi` does for you. Over Wi-Fi, the app finds the backend on its own: it reuses the laptop IP that Expo uses, on port 4000 (see [`app/src/config.ts`](app/src/config.ts)). For a deployed backend, set `EXPO_PUBLIC_BACKEND_URL`.
 
 ### 3. ThoughtSpot security settings (already set on se-thoughtspot-cloud)
 
@@ -115,6 +118,8 @@ Three ways to show the app on a shared screen, all through Android Studio:
 
 **On tablets** the app adapts: it turns to landscape, the Guide shows two columns, the chat stays a readable centred column, and the Liveboard switches to two columns in portrait or the full grid in landscape (see *Zoom and layout on every screen size*). In landscape the app's own header and option bar shrink to one line each, to leave the embeds more height, and Spotter zooms out to fit its 580px minimum height. The `useLayout()` hook in [`app/src/ui/useLayout.ts`](app/src/ui/useLayout.ts) decides the app's own layout.
 
+**Wi-Fi phone.** `npm run demo:wifi` runs the app on your phone without a cable, which is handy for handing the phone around a room. It isn't mirrored in Android Studio, so to show it on a shared screen use the USB option.
+
 **Tips**
 - **Warm up first.** The Dashboard pre-renders at launch (see *Making Liveboards load faster*), but open every tab and option once before the meeting. Everything stays loaded while the app is open, so the demo is instant afterwards.
 - **Side by side.** Put the device window next to your editor and open the file named in each screen's option bar, so the code is next to its result.
@@ -127,7 +132,7 @@ Three ways to show the app on a shared screen, all through Android Studio:
 ## Project structure
 
 ```
-package.json                      npm run help · setup · demo · demo:tablet · demo:usb · backend · app
+package.json                      npm run help · setup · demo · demo:tablet · demo:usb · demo:wifi · backend · app
 scripts/demo.mjs                  demo launcher: device, port forwarding, backend, Expo
 app/
   App.tsx                         shell: header + Guide / Dashboard / Spotter / Assistant tabs

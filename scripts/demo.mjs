@@ -6,6 +6,7 @@
 //   npm run demo:tablet   tablet emulator (an Android Studio virtual tablet)
 //   npm run demo:usb      your real Android phone over USB – mirror it in
 //                         Android Studio: View → Tool Windows → Running Devices
+//   npm run demo:wifi     your real phone over Wi-Fi – scan the QR code with Expo Go
 //   npm run help          prints the list of commands
 //
 // Steps:
@@ -15,6 +16,8 @@
 //      Mac over USB (adb reverse), so no Wi-Fi is needed
 //   4. start the backend and wait until it answers
 //   5. start Expo, install Expo Go on the device if needed, open the app there
+// Wi-Fi mode skips steps 2, 3 and the opening: no Android SDK needed, Expo
+// shows a QR code and the phone reaches this Mac on its Wi-Fi IP address.
 // Ctrl+C stops the backend and Expo; emulators keep running.
 //
 // Environment variables (optional):
@@ -24,7 +27,7 @@
 import { spawn, spawnSync } from 'node:child_process';
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import net from 'node:net';
-import { homedir } from 'node:os';
+import { homedir, networkInterfaces } from 'node:os';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -46,12 +49,16 @@ Northpeak demo – commands (run from the project folder)
   npm run demo:usb       Start the demo on your real Android phone (USB cable,
                          USB debugging on). Mirror it in Android Studio:
                          View → Tool Windows → Running Devices → +
+  npm run demo:wifi      Start the demo on your real phone over Wi-Fi (no cable):
+                         scan the QR code with the Expo Go app. Phone and Mac
+                         must be on the same Wi-Fi.
 
   npm run backend        Start only the backend (port 4000).
   npm run app            Start only Expo – then scan the QR code with Expo Go,
                          or press a to open the app on an emulator.
 
-Each demo command starts the backend + Expo and opens the app on the device.
+Each demo command starts the backend + Expo and opens the app on the device
+(over Wi-Fi, you open it by scanning the QR code).
 Press r in that terminal to reload the app, Ctrl+C to stop.
 Emulators are the virtual devices in Android Studio → Device Manager.
 `;
@@ -63,8 +70,8 @@ if (MODE === 'help') {
   console.log(HELP);
   process.exit(0);
 }
-if (!['phone', 'tablet', 'usb'].includes(MODE)) {
-  console.error(`Unknown device "${MODE}". Use --device=phone, --device=tablet or --device=usb.`);
+if (!['phone', 'tablet', 'usb', 'wifi'].includes(MODE)) {
+  console.error(`Unknown device "${MODE}". Use --device=phone, --device=tablet, --device=usb or --device=wifi.`);
   process.exit(1);
 }
 
@@ -125,13 +132,20 @@ function connectedDevices() {
     });
 }
 
+// This Mac's address on the local network (Wi-Fi mode), e.g. 192.168.1.20
+// (en0 is the Mac's Wi-Fi; other interfaces may be a VPN).
+const lanIp = () => {
+  const { en0, ...others } = networkInterfaces();
+  return [...(en0 ?? []), ...Object.values(others).flat()].find((i) => i.family === 'IPv4' && !i.internal)?.address;
+};
+
 // ── 1. Setup checks ──────────────────────────────────────────────────────────
 step('Checking the setup');
 if (!existsSync(join(ROOT, 'server/.env'))) fail('server/.env is missing: cp server/.env.example server/.env and fill it in.');
 if (!existsSync(join(ROOT, 'server/node_modules')) || !existsSync(join(ROOT, 'app/node_modules'))) {
   fail('Dependencies are missing: run npm run setup');
 }
-if (!existsSync(ADB)) fail(`Android SDK not found at ${SDK}. Install Android Studio, or set ANDROID_HOME.`);
+if (MODE !== 'wifi' && !existsSync(ADB)) fail(`Android SDK not found at ${SDK}. Install Android Studio, or set ANDROID_HOME.`);
 for (const [port, what] of [
   [BACKEND_PORT, 'backend'],
   [METRO_PORT, 'Expo'],
@@ -144,7 +158,10 @@ for (const [port, what] of [
 
 // ── 2. Device ────────────────────────────────────────────────────────────────
 let device;
-if (MODE === 'usb') {
+if (MODE === 'wifi') {
+  if (!lanIp()) fail('This Mac is not on a network. Join the same Wi-Fi as your phone.');
+  step(`Wi-Fi mode: your phone will reach this Mac at ${lanIp()}`);
+} else if (MODE === 'usb') {
   step('Looking for your Android phone on USB');
   await waitFor(() => (device = connectedDevices().find((d) => !d.emulator)), 30_000,
     'a phone. Connect it by USB, turn on Developer options → USB debugging, and accept the prompt on the phone');
@@ -162,13 +179,15 @@ if (MODE === 'usb') {
     await waitFor(() => (device = connectedDevices().find((d) => d.avd === avd)), 120_000, `the ${avd} emulator to appear`);
   }
 }
-await waitFor(() => adb('-s', device.serial, 'shell', 'getprop', 'sys.boot_completed') === '1', 180_000, 'Android to finish booting');
+if (device) {
+  await waitFor(() => adb('-s', device.serial, 'shell', 'getprop', 'sys.boot_completed') === '1', 180_000, 'Android to finish booting');
 
-// ── 3. Port forwarding ───────────────────────────────────────────────────────
-// The app reaches the backend at "<Expo host>:4000". In --localhost mode that
-// host is localhost, which adb reverse maps back to this Mac.
-step(`Forwarding the device's localhost:${BACKEND_PORT} and :${METRO_PORT} to this Mac`);
-for (const port of [BACKEND_PORT, METRO_PORT]) adb('-s', device.serial, 'reverse', `tcp:${port}`, `tcp:${port}`);
+  // ── 3. Port forwarding ─────────────────────────────────────────────────────
+  // The app reaches the backend at "<Expo host>:4000". In --localhost mode that
+  // host is localhost, which adb reverse maps back to this Mac.
+  step(`Forwarding the device's localhost:${BACKEND_PORT} and :${METRO_PORT} to this Mac`);
+  for (const port of [BACKEND_PORT, METRO_PORT]) adb('-s', device.serial, 'reverse', `tcp:${port}`, `tcp:${port}`);
+}
 
 // ── 4. Backend ───────────────────────────────────────────────────────────────
 step(`Starting the backend on port ${BACKEND_PORT}`);
@@ -184,32 +203,46 @@ backend.on('exit', (code) => code && fail(`The backend stopped (exit code ${code
 await waitFor(() => portInUse(BACKEND_PORT), 20_000, 'the backend to start');
 
 // ── 5. Expo + open the app ───────────────────────────────────────────────────
+// Over USB and on emulators Expo serves on localhost (forwarded in step 3);
+// over Wi-Fi it serves on the Mac's network address (--lan).
 step('Starting Expo');
-const expo = spawn('npx', ['expo', 'start', '--localhost', '--port', String(METRO_PORT)], {
+const host = MODE === 'wifi' ? lanIp() : 'localhost';
+const expo = spawn('npx', ['expo', 'start', MODE === 'wifi' ? '--lan' : '--localhost', '--port', String(METRO_PORT)], {
   cwd: join(ROOT, 'app'),
-  env: { ...process.env, ...(BACKEND_PORT !== 4000 && { EXPO_PUBLIC_BACKEND_URL: `http://localhost:${BACKEND_PORT}` }) },
+  env: { ...process.env, ...(BACKEND_PORT !== 4000 && { EXPO_PUBLIC_BACKEND_URL: `http://${host}:${BACKEND_PORT}` }) },
   stdio: 'inherit',
 });
 await waitFor(() => portInUse(METRO_PORT), 60_000, 'Expo to start');
 
-// Expo Go runs the app. Expo downloads it into ~/.expo/android-apk-cache the
-// first time it opens a project on Android; we reuse that copy for new devices.
-if (!adb('-s', device.serial, 'shell', 'pm', 'list', 'packages', EXPO_GO).includes(EXPO_GO)) {
-  const cache = join(homedir(), '.expo/android-apk-cache');
-  const apk = existsSync(cache) && readdirSync(cache).filter((f) => f.endsWith('.apk')).sort().pop();
-  if (!apk) fail('Expo Go is not installed on the device. Press a in the Expo output above to install it once, then run this again.');
-  step(`Installing Expo Go on the device (${apk})`);
-  adb('-s', device.serial, 'install', '-r', join(cache, apk));
-}
+if (MODE === 'wifi') {
+  console.log(`
+  Ready. On your phone: open Expo Go → Scan QR code, and scan the QR code Expo shows
+  (or type exp://${host}:${METRO_PORT} under "Enter URL manually").
+  Phone and Mac must be on the same Wi-Fi. If the phone can't connect: allow
+  "node" when macOS asks about incoming connections, and avoid guest or office
+  Wi-Fi that isolates devices (a phone hotspot works).
+  Press r here to reload the app, Ctrl+C to stop the backend and Expo.
+`);
+} else {
+  // Expo Go runs the app. Expo downloads it into ~/.expo/android-apk-cache the
+  // first time it opens a project on Android; we reuse that copy for new devices.
+  if (!adb('-s', device.serial, 'shell', 'pm', 'list', 'packages', EXPO_GO).includes(EXPO_GO)) {
+    const cache = join(homedir(), '.expo/android-apk-cache');
+    const apk = existsSync(cache) && readdirSync(cache).filter((f) => f.endsWith('.apk')).sort().pop();
+    if (!apk) fail('Expo Go is not installed on the device. Press a in the Expo output above to install it once, then run this again.');
+    step(`Installing Expo Go on the device (${apk})`);
+    adb('-s', device.serial, 'install', '-r', join(cache, apk));
+  }
 
-// Open the project in Expo Go on exactly this device (Expo's own "press a"
-// opens the first device it finds, which may not be the one you chose).
-// The two flags are the ones Expo itself adds: no developer-menu intro and no
-// floating gear button – cleaner for an audience. (⌘M still opens the menu.)
-step(`Opening the app on ${device.avd ?? device.serial}`);
-const url = `exp://127.0.0.1:${METRO_PORT}?__expo_disable_onboarding=1&__expo_disable_fab=1`;
-adb('-s', device.serial, 'shell', 'am', 'start', '-a', 'android.intent.action.VIEW', '-d', `'${url}'`);
-console.log('\n  Ready. Press r here to reload the app, Ctrl+C to stop the backend and Expo.\n');
+  // Open the project in Expo Go on exactly this device (Expo's own "press a"
+  // opens the first device it finds, which may not be the one you chose).
+  // The two flags are the ones Expo itself adds: no developer-menu intro and no
+  // floating gear button – cleaner for an audience. (⌘M still opens the menu.)
+  step(`Opening the app on ${device.avd ?? device.serial}`);
+  const url = `exp://127.0.0.1:${METRO_PORT}?__expo_disable_onboarding=1&__expo_disable_fab=1`;
+  adb('-s', device.serial, 'shell', 'am', 'start', '-a', 'android.intent.action.VIEW', '-d', `'${url}'`);
+  console.log('\n  Ready. Press r here to reload the app, Ctrl+C to stop the backend and Expo.\n');
+}
 
 // ── Clean shutdown ───────────────────────────────────────────────────────────
 function stop() {
