@@ -1,0 +1,100 @@
+// ─────────────────────────────────────────────────────────────────────────────
+// Northpeak Insights – a teaching app for embedding ThoughtSpot in mobile apps.
+//
+// The app shell: brand header + four tabs. Each tab lives in src/features/<tab>/,
+// and each embedding option in one self-contained file (see src/options.ts):
+//
+//   Guide      overview of all options               features/guide/
+//   Dashboard  options 1–2  Liveboard                features/dashboard/
+//   Spotter    option 3     Spotter UI               features/spotter/
+//   Assistant  options 4–5  headless Spotter (MCP)   features/assistant/
+//
+// Plain state-driven tabs keep the shell easy to read; a real app would use
+// Expo Router or React Navigation.
+// ─────────────────────────────────────────────────────────────────────────────
+import React, { useState } from 'react';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StatusBar } from 'expo-status-bar';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+
+import AssistantScreen from './src/features/assistant/AssistantScreen';
+import DashboardScreen from './src/features/dashboard/DashboardScreen';
+import GuideScreen from './src/features/guide/GuideScreen';
+import SpotterScreen from './src/features/spotter/SpotterScreen';
+import { OPTIONS, OptionKey, TabKey } from './src/options';
+import { colors } from './src/theme';
+
+const TABS: { key: TabKey; label: string }[] = [
+  { key: 'guide', label: 'Guide' },
+  { key: 'dashboard', label: 'Dashboard' },
+  { key: 'spotter', label: 'Spotter' },
+  { key: 'assistant', label: 'Assistant' },
+];
+
+export default function App() {
+  const [tab, setTab] = useState<TabKey>('guide');
+  // Selected option per tab (lifted here so the Guide can open a specific one)
+  const [dashboardOption, setDashboardOption] = useState<OptionKey>('liveboardNativeSdk');
+  const [assistantOption, setAssistantOption] = useState<OptionKey>('mcpEmbeddedCharts');
+  // Tabs are mounted on first visit, then kept alive so embeds and chats keep their state
+  const [visited, setVisited] = useState<Set<TabKey>>(new Set(['guide']));
+
+  function show(next: TabKey) {
+    setVisited((v) => new Set(v).add(next));
+    setTab(next);
+  }
+
+  // Guide → open a given option in its tab
+  function open(key: OptionKey) {
+    const { tab: target } = OPTIONS[key];
+    if (target === 'dashboard') setDashboardOption(key);
+    if (target === 'assistant') setAssistantOption(key);
+    show(target);
+  }
+
+  const screens: Record<TabKey, React.ReactNode> = {
+    guide: <GuideScreen onOpen={open} />,
+    dashboard: <DashboardScreen option={dashboardOption} onOptionChange={setDashboardOption} />,
+    spotter: <SpotterScreen />,
+    assistant: <AssistantScreen option={assistantOption} onOptionChange={setAssistantOption} />,
+  };
+
+  return (
+    <SafeAreaProvider>
+      <SafeAreaView style={styles.root} edges={['top', 'bottom']}>
+        <StatusBar style="light" />
+        <View style={styles.header}>
+          <Text style={styles.brand}>▲ Northpeak Outfitters</Text>
+          <Text style={styles.subtitle}>ThoughtSpot mobile embedding · {TABS.find((t) => t.key === tab)!.label}</Text>
+        </View>
+
+        {TABS.filter((t) => visited.has(t.key)).map((t) => (
+          <View key={t.key} style={[styles.screen, t.key !== tab && styles.hidden]}>
+            {screens[t.key]}
+          </View>
+        ))}
+
+        <View style={styles.tabBar}>
+          {TABS.map((t) => (
+            <TouchableOpacity key={t.key} style={styles.tab} onPress={() => show(t.key)}>
+              <Text style={[styles.tabLabel, t.key === tab && styles.tabActive]}>{t.label}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+      </SafeAreaView>
+    </SafeAreaProvider>
+  );
+}
+
+const styles = StyleSheet.create({
+  root: { flex: 1, backgroundColor: colors.brandDark },
+  header: { backgroundColor: colors.brandDark, paddingHorizontal: 16, paddingTop: 8, paddingBottom: 12 },
+  brand: { color: '#fff', fontSize: 20, fontWeight: '800', letterSpacing: 0.3 },
+  subtitle: { color: '#BFD8CF', fontSize: 12, marginTop: 2 },
+  screen: { flex: 1, backgroundColor: colors.background },
+  hidden: { display: 'none' },
+  tabBar: { flexDirection: 'row', backgroundColor: colors.surface, borderTopWidth: 1, borderColor: colors.border },
+  tab: { flex: 1, alignItems: 'center', paddingVertical: 12 },
+  tabLabel: { color: colors.muted, fontWeight: '600' },
+  tabActive: { color: colors.brand },
+});
