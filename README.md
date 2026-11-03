@@ -8,8 +8,8 @@ Open the **Guide** tab for an overview, then tap any option to see it running. O
 
 | # | Tab | Option | Technique | Recommend it when… | Code |
 |---|---|---|---|---|---|
-| 1 | Dashboard | Liveboard · **React Native SDK** | `<LiveboardEmbed>` from `@thoughtspot/react-native-embed-sdk` | The default for Liveboards: a typed native component | [`LiveboardNativeSdk.tsx`](app/src/features/dashboard/LiveboardNativeSdk.tsx) |
-| 2 | Dashboard | Liveboard · **Web SDK in a WebView** | `LiveboardEmbed` from `@thoughtspot/visual-embed-sdk`, in a WebView | You need a web SDK feature or version the RN SDK lacks, or the same code as the website | [`LiveboardWebSdk.tsx`](app/src/features/dashboard/LiveboardWebSdk.tsx) |
+| 1 | Dashboard | Liveboard · **Web SDK in a WebView** | `LiveboardEmbed` from `@thoughtspot/visual-embed-sdk`, in a WebView | **Recommended.** The same SDK as Spotter and the website, with every web SDK feature | [`LiveboardWebSdk.tsx`](app/src/features/dashboard/LiveboardWebSdk.tsx) |
+| 2 | Dashboard | Liveboard · **React Native SDK** | `<LiveboardEmbed>` from `@thoughtspot/react-native-embed-sdk` | A typed native component, but Liveboards only: no Spotter yet, fewer settings | [`LiveboardNativeSdk.tsx`](app/src/features/dashboard/LiveboardNativeSdk.tsx) |
 | 3 | Spotter | Spotter · **Web SDK in a WebView** | `SpotterEmbed` (new Spotter 3 experience), in a WebView | The full Spotter experience with no UI work | [`SpotterScreen.tsx`](app/src/features/spotter/SpotterScreen.tsx) |
 | 4 | Assistant | Headless Spotter (MCP) · **embedded charts** | Your chat UI + Spotter MCP Server; answers shown with `startAutoMCPFrameRenderer()` | Your own agent/chat UX, with interactive ThoughtSpot charts | [`EmbeddedAnswer.tsx`](app/src/features/assistant/EmbeddedAnswer.tsx) |
 | 5 | Assistant | Headless Spotter (MCP) · **native charts** | Your chat UI + Spotter MCP Server; each answer's rows exported and drawn natively | Strict design systems, very light UIs, no browser (watch, voice, Slack) | [`NativeAnswer.tsx`](app/src/features/assistant/NativeAnswer.tsx) |
@@ -18,8 +18,8 @@ All five use the **(Sample) Retail - Apparel** model and the **Retail Sales Perf
 
 ```
 ┌──────────────── Phone (Expo app) ────────────────┐       ┌──── server/ (Node) ─────┐       ┌──── ThoughtSpot ─────────┐
-│ 1  <LiveboardEmbed> (RN SDK) ──────┐             │       │                         │       │                          │
-│ 2  WebView + LiveboardEmbed ───────┤ getAuthToken├──────▶│ GET /api/token ─────────┼──────▶│ /auth/token/full         │
+│ 1  WebView + LiveboardEmbed ───────┐             │       │                         │       │                          │
+│ 2  <LiveboardEmbed> (RN SDK) ──────┤ getAuthToken├──────▶│ GET /api/token ─────────┼──────▶│ /auth/token/full         │
 │ 3  WebView + SpotterEmbed ─────────┤             │       │                         │       │                          │
 │ 4  WebView + startAutoMCPFrame… ───┘             │       │                         │       │                          │
 │      …then each embed loads ThoughtSpot directly, with that token ───────────────────────▶│ Liveboard · Spotter · MCP│
@@ -90,8 +90,8 @@ Under **Develop → Customizations → Security settings**, the app's page origi
 
 | Origin | Used by | CSP visual-embed hosts | CORS |
 |---|---|---|---|
-| `mobile-embed-shell.vercel.app` | Option 1: the RN SDK's hosted shell page | ✅ (`*`) | ✅ (`.*.vercel.app`) |
-| `http://localhost:4000` | Options 2–4: our WebView page (its `baseUrl`) | ✅ (`http://localhost:*`) | ✅ (`localhost:*`) |
+| `mobile-embed-shell.vercel.app` | Option 2: the RN SDK's hosted shell page | ✅ (`*`) | ✅ (`.*.vercel.app`) |
+| `http://localhost:4000` | Options 1, 3 and 4: our WebView page (its `baseUrl`) | ✅ (`http://localhost:*`) | ✅ (`localhost:*`) |
 
 On a client's instance, use their own domain instead, for example `https://mobile.northpeak.com`.
 
@@ -145,14 +145,14 @@ app/
     theme.ts                      brand colours + ThoughtSpot CSS variables
     thoughtspot/
       ThoughtSpotWebView.tsx      ★ the web SDK in a WebView: page, origin, token bridge, messages
-      PrefetchWarmup.tsx          prefetch() at app launch (options 2–4)
+      PrefetchWarmup.tsx          prefetch() at app launch (options 1, 3, 4)
     ui/                           OptionPicker · LoadingOverlay · Markdown · useLayout (phone / tablet)
     features/
       guide/GuideScreen.tsx       overview of all options
       dashboard/
         DashboardScreen.tsx       option picker + Reload (host event) for 1 and 2
-        LiveboardNativeSdk.tsx    option 1
-        LiveboardWebSdk.tsx       option 2
+        LiveboardNativeSdk.tsx    option 2
+        LiveboardWebSdk.tsx       option 1
       spotter/
         SpotterScreen.tsx         option 3
       assistant/
@@ -182,7 +182,7 @@ Each option is one self-contained file that starts with a comment block explaini
 
 ### The web SDK in a WebView ([`ThoughtSpotWebView.tsx`](app/src/thoughtspot/ThoughtSpotWebView.tsx))
 
-Options 2, 3 and 4 use the regular web SDK. This component does the plumbing once:
+Options 1, 3 and 4 use the regular web SDK. This component does the plumbing once:
 
 1. Builds a tiny HTML page that loads `@thoughtspot/visual-embed-sdk` from a CDN and calls `init()`.
 2. Loads it with `source={{ html, baseUrl: 'http://localhost:4000' }}`. **The `baseUrl` sets the page's origin**, which is what ThoughtSpot checks against CSP and CORS.
@@ -201,16 +201,34 @@ ThoughtSpot documents two techniques, and the app uses both ([`config.ts`](app/s
 
 | Technique | What it does | Where | Gain |
 |---|---|---|---|
-| **Prefetch** | Downloads ThoughtSpot's static files (JS/CSS) before the user opens an embed | Option 1: `callPrefetch: true` in the RN SDK's `init()`. Options 2–4: an invisible WebView at app launch calls `prefetch(host, [PrefetchFeatures.LiveboardEmbed])` ([`PrefetchWarmup.tsx`](app/src/thoughtspot/PrefetchWarmup.tsx)) | Small: saves the file downloads only |
-| **Pre-render** | Loads the Liveboard itself ahead of time and keeps it alive | The Dashboard tab mounts in the background at launch; hidden tabs and Liveboard options stay mounted, so they are never rebuilt | Large: the Liveboard is already on screen when the user opens it |
+| **Prefetch** | Downloads ThoughtSpot's static files (JS/CSS) before the user opens an embed | Options 1, 3 and 4: an invisible WebView at app launch calls `prefetch(host, [PrefetchFeatures.LiveboardEmbed])` ([`PrefetchWarmup.tsx`](app/src/thoughtspot/PrefetchWarmup.tsx)). Option 2: `callPrefetch: true` in the RN SDK's `init()` | Small: saves the file downloads only |
+| **Pre-render** | Loads the Liveboard itself ahead of time and keeps it alive | The Dashboard tab mounts in the background at launch, on option 1; hidden tabs and Liveboard options stay mounted, so they are never rebuilt | Large: the Liveboard is already on screen when the user opens it |
 
-Prefetch for options 2–4 works because their WebViews share one page origin, and so one cache (see `PAGE_ORIGIN` in `ThoughtSpotWebView.tsx`). Hidden screens use `opacity: 0` rather than `display: none`, so a pre-rendered Liveboard keeps loading in the background. The trade-off: pre-rendering spends one Liveboard load at launch even if the user never opens the Dashboard.
+Prefetch for options 1, 3 and 4 works because their WebViews share one page origin, and so one cache (see `PAGE_ORIGIN` in `ThoughtSpotWebView.tsx`). Hidden screens use `opacity: 0` rather than `display: none`, so a pre-rendered Liveboard keeps loading in the background. The trade-off: pre-rendering spends one Liveboard load at launch even if the user never opens the Dashboard.
 
 ---
 
 ## Walkthrough
 
-### ① Liveboard with the React Native SDK
+### ① Liveboard with the web SDK in a WebView (recommended)
+
+```js
+window.embed = new LiveboardEmbed('#root', {
+  liveboardId: LIVEBOARD_ID,
+  hideLiveboardHeader: true,
+  visibleActions: [Action.DrillDown, Action.AddFilter, Action.Share],
+  fullHeight: true,            // the page scrolls, and tiles lazy-load as they scroll into view
+  enable2ColumnLayout: true,   // two columns on mid-size screens instead of one
+});
+embed.on(EmbedEvent.LiveboardRendered, () => post({ type: 'RENDERED' }));
+embed.render();
+```
+
+and the host event from React Native: `webRef.current.run('embed.trigger(HostEvent.Reload)')`.
+
+We recommend this option over the React Native SDK: it's the same SDK and the same `ThoughtSpotWebView` plumbing as Spotter (option 3), so one technique covers Liveboards and Spotter, and new web SDK features work right away. The Dashboard opens on it, and it's the one pre-rendered at launch.
+
+### ② Liveboard with the React Native SDK
 
 ```tsx
 init({ thoughtSpotHost, authType: AuthType.TrustedAuthTokenCookieless, getAuthToken });
@@ -227,27 +245,11 @@ embedRef.current?.trigger(HostEvent.Reload);        // host event: app → embed
 
 - It's the same `init`, view config, `EmbedEvent` and `HostEvent` model as the web SDK, so web skills carry over.
 - Behind the scenes it renders a WebView that loads a ThoughtSpot-hosted shell page (`mobile-embed-shell.vercel.app`) and runs the web SDK there.
-- **Limitation:** version 1.0 only supports `LiveboardEmbed`. Everything else uses the technique in options 2–4.
+- **Limitation:** version 1.0 only supports `LiveboardEmbed`. Everything else uses the technique in options 1, 3 and 4.
 
-### ② Liveboard with the web SDK in a WebView
+**Compare 1 and 2 on stage:** same view config, same events, same host event; only the plumbing differs. Option 1 is exactly what you'd write on a website, so any web SDK version or feature works on day one. A concrete example: `fullHeight`, which the React Native SDK doesn't expose yet. Since SDK 1.52 it also turns on lazy loading (`lazyLoadingForFullHeight`), so tiles load as the user scrolls instead of all at once.
 
-```js
-window.embed = new LiveboardEmbed('#root', {
-  liveboardId: LIVEBOARD_ID,
-  hideLiveboardHeader: true,
-  visibleActions: [Action.DrillDown, Action.AddFilter, Action.Share],
-  fullHeight: true,            // the page scrolls, and tiles lazy-load as they scroll into view
-  enable2ColumnLayout: true,   // two columns on mid-size screens instead of one
-});
-embed.on(EmbedEvent.LiveboardRendered, () => post({ type: 'RENDERED' }));
-embed.render();
-```
-
-and the host event from React Native: `webRef.current.run('embed.trigger(HostEvent.Reload)')`.
-
-**Compare 1 and 2 on stage:** same view config, same events, same host event; only the plumbing differs. Option 2 is exactly what you'd write on a website, so any web SDK version or feature works on day one. A concrete example: `fullHeight`, which the React Native SDK doesn't expose yet. Since SDK 1.52 it also turns on lazy loading (`lazyLoadingForFullHeight`), so tiles load as the user scrolls instead of all at once.
-
-**Zoom and layout on every screen size.** ThoughtSpot's React Native SDK shell renders Liveboards at `initial-scale=0.725`, and option 2 does the same (`viewportScale={0.725}`). That fixed zoom, together with `enable2ColumnLayout`, gives the right layout everywhere (measured on the emulators):
+**Zoom and layout on every screen size.** ThoughtSpot's React Native SDK shell renders Liveboards at `initial-scale=0.725`, and option 1 does the same (`viewportScale={0.725}`). That fixed zoom, together with `enable2ColumnLayout`, gives the right layout everywhere (measured on the emulators):
 
 | Screen | Page width at 0.725 | Liveboard layout |
 |---|---|---|
@@ -368,7 +370,7 @@ curl https://api.anthropic.com/v1/messages \
 | Top of Spotter cut off (tablet in landscape), or bottom of an embedded answer chart cut off | ThoughtSpot's embedded app needs at least 580px of height. Zoom the page to fit with `zoomToFitHeight()` ([`ThoughtSpotWebView.tsx`](app/src/thoughtspot/ThoughtSpotWebView.tsx)), as Spotter and the answer cards do. |
 | Inspect what's inside a WebView | In development builds, open `chrome://inspect` in Chrome on your Mac: every app WebView is listed (`webviewDebuggingEnabled`). |
 | Liveboard spinner for minutes on the emulator | The emulator is slow; a phone takes seconds. For live demos, mirror a USB phone (`npm run demo:usb`). |
-| White bands over charts on the emulator | An emulator graphics glitch; real devices don't show it. |
+| On the emulator, tiles drawn over other tiles, or white bands over charts | Android emulators put GPU-drawn WebViews on screen wrongly; the page itself is correct (Chromium's own screenshot is fine) and real phones don't show it. On emulators only, `ThoughtSpotWebView` draws in software (`androidLayerType="software"`, detected with `expo-device`), which fixes options 1, 3 and 4. Option 2's WebView is inside ThoughtSpot's React Native SDK, which doesn't expose that setting, so it can still glitch on an emulator. |
 | Expo Go shows a developer menu on launch | Expo Go's own menu on first launch: close it. |
 
 ## References

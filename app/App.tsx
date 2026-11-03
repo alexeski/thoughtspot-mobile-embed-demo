@@ -38,7 +38,7 @@ export default function App() {
   const [tab, setTab] = useState<TabKey>('guide');
   const { isShort } = useLayout(); // landscape: one-line header, more room for embeds
   // Selected option per tab (lifted here so the Guide can open a specific one)
-  const [dashboardOption, setDashboardOption] = useState<OptionKey>('liveboardNativeSdk');
+  const [dashboardOption, setDashboardOption] = useState<OptionKey>('liveboardWebSdk');
   const [assistantOption, setAssistantOption] = useState<OptionKey>('mcpEmbeddedCharts');
   // Tabs are mounted on first visit, then kept alive so embeds and chats keep their state.
   // The Dashboard is pre-rendered at launch (see PRERENDER_DASHBOARD in config.ts).
@@ -75,7 +75,7 @@ export default function App() {
           <Text style={styles.subtitle}>ThoughtSpot mobile embedding · {TABS.find((t) => t.key === tab)!.label}</Text>
         </View>
 
-        {/* Prefetch ThoughtSpot's static files right away (options 2–4) */}
+        {/* Prefetch ThoughtSpot's static files right away (options 1, 3 and 4) */}
         <PrefetchWarmup />
 
         <View style={styles.screens}>

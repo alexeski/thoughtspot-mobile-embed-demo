@@ -2,7 +2,7 @@
 // Option 3 – Spotter with the Visual Embed SDK in a WebView
 //
 // The React Native SDK doesn't support Spotter, so we use SpotterEmbed from the
-// web SDK inside ThoughtSpotWebView (the same technique as option 2).
+// web SDK inside ThoughtSpotWebView (the same technique as option 1).
 //
 // Mobile tips:
 // • Turn on the new Spotter 3 experience. Besides the new look, it is

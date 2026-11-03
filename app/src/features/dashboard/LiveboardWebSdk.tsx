@@ -1,13 +1,13 @@
 // ─────────────────────────────────────────────────────────────────────────────
-// Option 2 – Liveboard with the Visual Embed SDK in a WebView
+// Option 1 – Liveboard with the Visual Embed SDK in a WebView
 //
-// The same Liveboard as option 1, without the React Native SDK: the regular
+// The same Liveboard as option 2, without the React Native SDK: the regular
 // web SDK runs inside ThoughtSpotWebView. The `script` below is exactly what
 // you'd write on a website, so web examples and docs apply as-is, and you can
 // use any web SDK version or feature the React Native SDK doesn't expose yet.
 //
 // Compare with LiveboardNativeSdk.tsx: same view config, same events, same
-// host event – only the plumbing differs. One thing here option 1 can't do:
+// host event – only the plumbing differs. One thing here option 2 can't do:
 // fullHeight. The frame grows to the Liveboard's height and the page scrolls;
 // from SDK 1.52 this also turns on lazy loading, so tiles load as they scroll
 // into view instead of all at once. (The React Native SDK doesn't expose

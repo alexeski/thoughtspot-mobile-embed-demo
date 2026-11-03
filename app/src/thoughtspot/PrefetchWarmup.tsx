@@ -7,8 +7,8 @@
 // right away. It calls the web SDK's prefetch(), which loads the Liveboard
 // app's JS/CSS into the WebView cache, and init(), which authenticates early.
 //
-// Options 2–4 then load faster because their WebViews use the same page origin
-// (see ThoughtSpotWebView), so they share this cache. Option 1 runs in the
+// Options 1, 3 and 4 then load faster because their WebViews use the same page origin
+// (see ThoughtSpotWebView), so they share this cache. Option 2 runs in the
 // React Native SDK's own shell page, so it prefetches via `callPrefetch` in
 // its init() instead (see LiveboardNativeSdk.tsx).
 //

@@ -1,4 +1,5 @@
 // Dashboard tab – the same Liveboard, two ways (options 1 and 2).
+// Option 1 (web SDK) is shown first and pre-rendered at launch; see App.tsx.
 import React, { useEffect, useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
@@ -10,8 +11,8 @@ import LiveboardWebSdk from './LiveboardWebSdk';
 import type { LiveboardHandle } from './types';
 
 const OPTIONS = {
-  liveboardNativeSdk: LiveboardNativeSdk,
   liveboardWebSdk: LiveboardWebSdk,
+  liveboardNativeSdk: LiveboardNativeSdk,
 } as const;
 type DashboardOption = keyof typeof OPTIONS;
 
@@ -24,8 +25,8 @@ export default function DashboardScreen({
 }) {
   // Either option exposes reload(), so one button works for both
   const refs = {
-    liveboardNativeSdk: useRef<LiveboardHandle>(null),
     liveboardWebSdk: useRef<LiveboardHandle>(null),
+    liveboardNativeSdk: useRef<LiveboardHandle>(null),
   };
 
   // Keep every option alive once it has been shown, so switching back and

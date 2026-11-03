@@ -1,5 +1,5 @@
 // ─────────────────────────────────────────────────────────────────────────────
-// Option 1 – Liveboard with the React Native Embed SDK
+// Option 2 – Liveboard with the React Native Embed SDK
 //
 //   npm i @thoughtspot/react-native-embed-sdk react-native-webview
 //

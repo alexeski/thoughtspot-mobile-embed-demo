@@ -17,23 +17,23 @@ export type Option = {
 };
 
 export const OPTIONS = {
-  liveboardNativeSdk: {
-    number: 1,
-    tab: 'dashboard',
-    label: 'React Native SDK',
-    title: 'Liveboard with the React Native Embed SDK',
-    how: '<LiveboardEmbed> from @thoughtspot/react-native-embed-sdk',
-    when: 'The default for Liveboards: a typed native component, no HTML to manage.',
-    file: 'src/features/dashboard/LiveboardNativeSdk.tsx',
-  },
   liveboardWebSdk: {
-    number: 2,
+    number: 1,
     tab: 'dashboard',
     label: 'Web SDK',
     title: 'Liveboard with the Visual Embed SDK in a WebView',
     how: 'LiveboardEmbed from @thoughtspot/visual-embed-sdk, inside a WebView',
-    when: 'You need a web SDK feature or version the React Native SDK lacks, or want the same code as your website.',
+    when: 'Recommended: the same web SDK as Spotter (option 3) and your website, with every web SDK feature on day one.',
     file: 'src/features/dashboard/LiveboardWebSdk.tsx',
+  },
+  liveboardNativeSdk: {
+    number: 2,
+    tab: 'dashboard',
+    label: 'React Native SDK',
+    title: 'Liveboard with the React Native Embed SDK',
+    how: '<LiveboardEmbed> from @thoughtspot/react-native-embed-sdk',
+    when: 'A typed native component, but Liveboards only (no Spotter yet) and fewer settings than the web SDK.',
+    file: 'src/features/dashboard/LiveboardNativeSdk.tsx',
   },
   spotterWebSdk: {
     number: 3,

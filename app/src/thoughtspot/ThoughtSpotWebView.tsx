@@ -1,5 +1,6 @@
 import React, { useImperativeHandle, useMemo, useRef } from 'react';
-import { StyleProp, ViewStyle } from 'react-native';
+import { Platform, StyleProp, ViewStyle } from 'react-native';
+import * as Device from 'expo-device';
 import { WebView as RNWebView, WebViewMessageEvent } from 'react-native-webview';
 
 import { getAuthToken } from '../auth';
@@ -20,7 +21,7 @@ import { colors, thoughtSpotCustomizations } from '../theme';
 //   4. passes messages both ways: post(msg) from the page → onMessage here;
 //      ref.run(js) from React Native → runs in the page (e.g. host events)
 //
-// Used by options 2 (Liveboard), 3 (Spotter) and 4 (embedded MCP answers).
+// Used by options 1 (Liveboard), 3 (Spotter) and 4 (embedded MCP answers).
 // ─────────────────────────────────────────────────────────────────────────────
 
 // The page's origin comes from `baseUrl`. That origin must be allowed in
@@ -36,6 +37,12 @@ const SDK_URL = 'https://cdn.jsdelivr.net/npm/@thoughtspot/visual-embed-sdk@1.53
 export const TS_MIN_HEIGHT = 580;
 export const zoomToFitHeight = (frameHeight: number) => Math.min(1, frameHeight / TS_MIN_HEIGHT);
 
+// Android emulators composite GPU-drawn WebViews wrongly: pieces of one tile
+// show up over another (Chromium's own output is correct; real phones are
+// fine). Drawing the WebView in software avoids it. Emulators only – on a
+// real phone, GPU drawing is faster and uses less memory.
+const ANDROID_LAYER_TYPE = Platform.OS === 'android' && !Device.isDevice ? 'software' : undefined;
+
 export type ThoughtSpotWebViewHandle = {
   // Runs JavaScript in the page, e.g. "embed.trigger(HostEvent.Reload)"
   run: (js: string) => void;
@@ -50,7 +57,7 @@ type Props = {
   // Page zoom. 1 = the device's real size – right for responsive UIs such as
   // the new Spotter experience. Below 1 the page gets more room than the screen:
   // ThoughtSpot's own React Native SDK renders Liveboards at 0.725 (a ~570px-wide
-  // page on a 412px phone) – option 2 does the same – and Spotter zooms out on
+  // page on a 412px phone) – option 1 does the same – and Spotter zooms out on
   // short screens to get the 580px of height it needs.
   viewportScale?: number;
   background?: string;
@@ -154,6 +161,7 @@ export default function ThoughtSpotWebView({
       javaScriptEnabled
       domStorageEnabled
       nestedScrollEnabled={nestedScrollEnabled}
+      androidLayerType={ANDROID_LAYER_TYPE}
       webviewDebuggingEnabled={__DEV__} // inspect the page from Chrome: chrome://inspect
       style={[{ backgroundColor: background }, style]}
     />
