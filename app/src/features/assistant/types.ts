@@ -3,11 +3,11 @@
 
 // One answer = one chart Spotter generated.
 export type SpotterAnswer = {
-  answer_id: string; // '{"session_id":"…","gen_no":2}' – identifies this exact answer (option 5)
+  answer_id: string; // '{"session_id":"…","gen_no":2}' – identifies this exact answer (option 6)
   answer_title: string;
   answer_query: string; // ThoughtSpot search tokens, e.g. "[sales] [region]"
   answer_data_source_id: string;
-  iframe_url: string; // https://<host>/?tsmcp=true#/embed/conv-assist-answer?sessionId=… (option 4)
+  iframe_url: string; // https://<host>/?tsmcp=true#/embed/conv-assist-answer?sessionId=… (option 5)
 };
 
 // One item in session_updates.

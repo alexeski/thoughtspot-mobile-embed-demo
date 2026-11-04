@@ -1,5 +1,5 @@
 // ─────────────────────────────────────────────────────────────────────────────
-// Option 4 – Spotter MCP answer, shown as Spotter's own embedded chart
+// Option 5 – Spotter MCP answer, shown as Spotter's own embedded chart
 //
 // Every MCP `answer` carries an iframe_url pointing at the chart Spotter built.
 // It can't be loaded as-is: it needs ThoughtSpot auth. The Visual Embed SDK's

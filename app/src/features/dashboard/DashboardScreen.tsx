@@ -1,4 +1,4 @@
-// Dashboard tab – the same Liveboard, three ways (options 1, 2 and 6).
+// Dashboard tab – the same Liveboard, three ways (options 1, 2 and 3).
 // Option 1 (web SDK) is shown first and pre-rendered at launch; see App.tsx.
 import React, { useEffect, useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';

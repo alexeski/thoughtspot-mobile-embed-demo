@@ -21,7 +21,7 @@ import { ANDROID_LAYER_TYPE } from './emulator'; // software drawing on Android 
 //   4. passes messages both ways: post(msg) from the page → onMessage here;
 //      ref.run(js) from React Native → runs in the page (e.g. host events)
 //
-// Used by options 1 (Liveboard), 3 (Spotter) and 4 (embedded MCP answers).
+// Used by options 1 (Liveboard), 4 (Spotter) and 5 (embedded MCP answers).
 // ─────────────────────────────────────────────────────────────────────────────
 
 // The page's origin comes from `baseUrl`. That origin must be allowed in

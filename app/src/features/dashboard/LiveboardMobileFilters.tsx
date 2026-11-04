@@ -1,5 +1,5 @@
 // ─────────────────────────────────────────────────────────────────────────────
-// Option 6 – option 2, with filters made for phones
+// Option 3 – option 2, with filters made for phones
 //
 // The same React Native SDK Liveboard as option 2, with two changes to how
 // its filters behave on a small screen:

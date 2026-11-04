@@ -5,9 +5,9 @@
 // and each embedding option in one self-contained file (see src/options.ts):
 //
 //   Guide      overview of all options               features/guide/
-//   Dashboard  options 1–2, 6  Liveboard             features/dashboard/
-//   Spotter    option 3     Spotter UI               features/spotter/
-//   Assistant  options 4–5  headless Spotter (MCP)   features/assistant/
+//   Dashboard  options 1–3  Liveboard                features/dashboard/
+//   Spotter    option 4     Spotter UI               features/spotter/
+//   Assistant  options 5–6  headless Spotter (MCP)   features/assistant/
 //
 // Plain state-driven tabs keep the shell easy to read; a real app would use
 // Expo Router or React Navigation.
@@ -80,7 +80,7 @@ export default function App() {
           <Text style={styles.subtitle}>ThoughtSpot mobile embedding · {TABS.find((t) => t.key === tab)!.label}</Text>
         </View>
 
-        {/* Prefetch ThoughtSpot's static files right away (options 1, 3 and 4) */}
+        {/* Prefetch ThoughtSpot's static files right away (options 1, 4 and 5) */}
         <PrefetchWarmup />
 
         <View style={styles.screens}>

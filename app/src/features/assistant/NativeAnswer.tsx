@@ -1,5 +1,5 @@
 // ─────────────────────────────────────────────────────────────────────────────
-// Option 5 – Spotter MCP answer, drawn with native React Native views
+// Option 6 – Spotter MCP answer, drawn with native React Native views
 //
 // As soon as an `answer` update arrives, we fetch that exact answer's rows
 // (the backend exports it by session_id + gen_no, see server/thoughtspot.js)

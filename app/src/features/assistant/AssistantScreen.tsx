@@ -1,5 +1,5 @@
 // ─────────────────────────────────────────────────────────────────────────────
-// Assistant tab – headless Spotter via the Spotter MCP Server (options 4–5).
+// Assistant tab – headless Spotter via the Spotter MCP Server (options 5–6).
 //
 // Here ThoughtSpot is the analytics agent and the app owns the whole UI: this
 // file is just a chat screen. The conversation flow is in useSpotterChat.ts;

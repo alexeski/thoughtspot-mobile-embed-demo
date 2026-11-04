@@ -1,5 +1,5 @@
 // ─────────────────────────────────────────────────────────────────────────────
-// useSpotterChat – the Spotter MCP conversation flow, with no UI (options 4–5).
+// useSpotterChat – the Spotter MCP conversation flow, with no UI (options 5–6).
 //
 // Our backend exposes the Spotter MCP Server's three tools 1:1:
 //   ① create_analysis_session → POST /api/chat/sessions

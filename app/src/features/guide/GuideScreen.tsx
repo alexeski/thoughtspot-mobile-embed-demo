@@ -18,7 +18,7 @@ export default function GuideScreen({ onOpen }: { onOpen: (key: OptionKey) => vo
 
   return (
     <ScrollView contentContainerStyle={styles.page}>
-      <Text style={styles.h1}>Five ways to put ThoughtSpot in a mobile app</Text>
+      <Text style={styles.h1}>Six ways to put ThoughtSpot in a mobile app</Text>
       <Text style={styles.p}>
         Every option uses the same foundation: the app never holds ThoughtSpot credentials. It asks its own
         backend for a short-lived token (cookieless trusted auth), and every option uses the same data model.

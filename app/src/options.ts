@@ -23,7 +23,7 @@ export const OPTIONS = {
     label: 'Web SDK',
     title: 'Liveboard with the Visual Embed SDK in a WebView',
     how: 'LiveboardEmbed from @thoughtspot/visual-embed-sdk, inside a WebView',
-    when: 'Recommended: the same web SDK as Spotter (option 3) and your website, with every web SDK feature on day one.',
+    when: 'Recommended: the same web SDK as Spotter (option 4) and your website, with every web SDK feature on day one.',
     file: 'src/features/dashboard/LiveboardWebSdk.tsx',
   },
   liveboardNativeSdk: {
@@ -36,7 +36,7 @@ export const OPTIONS = {
     file: 'src/features/dashboard/LiveboardNativeSdk.tsx',
   },
   liveboardMobileFilters: {
-    number: 6,
+    number: 3,
     tab: 'dashboard',
     label: 'Mobile filters',
     title: 'Option 2, with filters made for phones',
@@ -45,7 +45,7 @@ export const OPTIONS = {
     file: 'src/features/dashboard/LiveboardMobileFilters.tsx',
   },
   spotterWebSdk: {
-    number: 3,
+    number: 4,
     tab: 'spotter',
     label: 'Web SDK',
     title: 'Spotter with the Visual Embed SDK in a WebView',
@@ -54,7 +54,7 @@ export const OPTIONS = {
     file: 'src/features/spotter/SpotterScreen.tsx',
   },
   mcpEmbeddedCharts: {
-    number: 4,
+    number: 5,
     tab: 'assistant',
     label: 'Embedded charts',
     title: 'Headless Spotter via MCP, with embedded answer charts',
@@ -63,7 +63,7 @@ export const OPTIONS = {
     file: 'src/features/assistant/EmbeddedAnswer.tsx',
   },
   mcpNativeCharts: {
-    number: 5,
+    number: 6,
     tab: 'assistant',
     label: 'Native charts',
     title: 'Headless Spotter via MCP, with native charts',

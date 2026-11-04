@@ -1,6 +1,6 @@
 // Shows one Spotter answer, using whichever option is selected in the Assistant tab:
-//   option 4 → EmbeddedAnswer: Spotter's own interactive chart
-//   option 5 → NativeAnswer:   the answer's rows, drawn with React Native views
+//   option 5 → EmbeddedAnswer: Spotter's own interactive chart
+//   option 6 → NativeAnswer:   the answer's rows, drawn with React Native views
 import React from 'react';
 
 import type { OptionKey } from '../../options';

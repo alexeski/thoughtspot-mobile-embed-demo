@@ -1,5 +1,5 @@
 // ─────────────────────────────────────────────────────────────────────────────
-// Option 3 – Spotter with the Visual Embed SDK in a WebView
+// Option 4 – Spotter with the Visual Embed SDK in a WebView
 //
 // The React Native SDK doesn't support Spotter, so we use SpotterEmbed from the
 // web SDK inside ThoughtSpotWebView (the same technique as option 1).

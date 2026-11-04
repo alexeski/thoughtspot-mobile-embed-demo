@@ -6,6 +6,6 @@ import * as Device from 'expo-device';
 // fine). Drawing the WebView in software avoids it. Emulators only – on a
 // real phone, GPU drawing is faster and uses less memory.
 //
-// Used by ThoughtSpotWebView (options 1, 3, 4) and, through metro.config.js,
-// by the React Native SDK's own WebView (options 2, 6).
+// Used by ThoughtSpotWebView (options 1, 4, 5) and, through metro.config.js,
+// by the React Native SDK's own WebView (options 2, 3).
 export const ANDROID_LAYER_TYPE = Platform.OS === 'android' && !Device.isDevice ? 'software' : undefined;

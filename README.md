@@ -1,21 +1,21 @@
 # Northpeak Insights: ThoughtSpot in a mobile app
 
-A teaching app for **embedding ThoughtSpot in mobile apps**. It's a small React Native (Expo) app for **Northpeak Outfitters**, a made-up outdoor apparel retailer, plus a small Node backend. It shows **five ways** to embed ThoughtSpot, side by side, on the same data.
+A teaching app for **embedding ThoughtSpot in mobile apps**. It's a small React Native (Expo) app for **Northpeak Outfitters**, a made-up outdoor apparel retailer, plus a small Node backend. It shows **six ways** to embed ThoughtSpot, side by side, on the same data.
 
 Open the **Guide** tab for an overview, then tap any option to see it running. On every screen, the bar at the top names the option, the technique, and the file that implements it.
 
-## The five options
+## The six options
 
 | # | Tab | Option | Technique | Recommend it when… | Code |
 |---|---|---|---|---|---|
 | 1 | Dashboard | Liveboard · **Web SDK in a WebView** | `LiveboardEmbed` from `@thoughtspot/visual-embed-sdk`, in a WebView | **Recommended.** The same SDK as Spotter and the website, with every web SDK feature | [`LiveboardWebSdk.tsx`](app/src/features/dashboard/LiveboardWebSdk.tsx) |
 | 2 | Dashboard | Liveboard · **React Native SDK** | `<LiveboardEmbed>` from `@thoughtspot/react-native-embed-sdk` | A typed native component, but Liveboards only: no Spotter yet, fewer settings | [`LiveboardNativeSdk.tsx`](app/src/features/dashboard/LiveboardNativeSdk.tsx) |
-| 3 | Spotter | Spotter · **Web SDK in a WebView** | `SpotterEmbed` (new Spotter 3 experience), in a WebView | The full Spotter experience with no UI work | [`SpotterScreen.tsx`](app/src/features/spotter/SpotterScreen.tsx) |
-| 4 | Assistant | Headless Spotter (MCP) · **embedded charts** | Your chat UI + Spotter MCP Server; answers shown with `startAutoMCPFrameRenderer()` | Your own agent/chat UX, with interactive ThoughtSpot charts | [`EmbeddedAnswer.tsx`](app/src/features/assistant/EmbeddedAnswer.tsx) |
-| 5 | Assistant | Headless Spotter (MCP) · **native charts** | Your chat UI + Spotter MCP Server; each answer's rows exported and drawn natively | Strict design systems, very light UIs, no browser (watch, voice, Slack) | [`NativeAnswer.tsx`](app/src/features/assistant/NativeAnswer.tsx) |
-| 6 | Dashboard | Liveboard · **React Native SDK, mobile filters** | Option 2 + filter chips on one scrollable row (`rules_UNSTABLE` CSS on this embed only) + one filter per dialog (`additionalFlags: { isCentralizedLiveboardFilterUXEnabled: false }`) | Phones, when wrapped chips push the tiles down and the all-filters dialog is cramped. The CSS is unsupported: re-test on every upgrade | [`LiveboardMobileFilters.tsx`](app/src/features/dashboard/LiveboardMobileFilters.tsx) |
+| 3 | Dashboard | Liveboard · **React Native SDK, mobile filters** | Option 2 + filter chips on one scrollable row (`rules_UNSTABLE` CSS on this embed only) + one filter per dialog (`additionalFlags: { isCentralizedLiveboardFilterUXEnabled: false }`) | Phones, when wrapped chips push the tiles down and the all-filters dialog is cramped. The CSS is unsupported: re-test on every upgrade | [`LiveboardMobileFilters.tsx`](app/src/features/dashboard/LiveboardMobileFilters.tsx) |
+| 4 | Spotter | Spotter · **Web SDK in a WebView** | `SpotterEmbed` (new Spotter 3 experience), in a WebView | The full Spotter experience with no UI work | [`SpotterScreen.tsx`](app/src/features/spotter/SpotterScreen.tsx) |
+| 5 | Assistant | Headless Spotter (MCP) · **embedded charts** | Your chat UI + Spotter MCP Server; answers shown with `startAutoMCPFrameRenderer()` | Your own agent/chat UX, with interactive ThoughtSpot charts | [`EmbeddedAnswer.tsx`](app/src/features/assistant/EmbeddedAnswer.tsx) |
+| 6 | Assistant | Headless Spotter (MCP) · **native charts** | Your chat UI + Spotter MCP Server; each answer's rows exported and drawn natively | Strict design systems, very light UIs, no browser (watch, voice, Slack) | [`NativeAnswer.tsx`](app/src/features/assistant/NativeAnswer.tsx) |
 
-All five use the **(Sample) Retail - Apparel** model and the **Retail Sales Performance** Liveboard built on it, in the **Eski-Test1** Org on `se-thoughtspot-cloud`. The option catalog lives in one file, [`app/src/options.ts`](app/src/options.ts), which drives the Guide, the option pickers, and the numbering used everywhere.
+All six use the **(Sample) Retail - Apparel** model and the **Retail Sales Performance** Liveboard built on it, in the **Eski-Test1** Org on `se-thoughtspot-cloud`. The option catalog lives in one file, [`app/src/options.ts`](app/src/options.ts), which drives the Guide, the option pickers, and the numbering used everywhere.
 
 ```
 ┌──────────────── Phone (Expo app) ────────────────┐       ┌──── server/ (Node) ─────┐       ┌──── ThoughtSpot ─────────┐
@@ -91,8 +91,8 @@ Under **Develop → Customizations → Security settings**, the app's page origi
 
 | Origin | Used by | CSP visual-embed hosts | CORS |
 |---|---|---|---|
-| `mobile-embed-shell.vercel.app` | Option 2: the RN SDK's hosted shell page | ✅ (`*`) | ✅ (`.*.vercel.app`) |
-| `http://localhost:4000` | Options 1, 3 and 4: our WebView page (its `baseUrl`) | ✅ (`http://localhost:*`) | ✅ (`localhost:*`) |
+| `mobile-embed-shell.vercel.app` | Options 2 and 3: the RN SDK's hosted shell page | ✅ (`*`) | ✅ (`.*.vercel.app`) |
+| `http://localhost:4000` | Options 1, 4 and 5: our WebView page (its `baseUrl`) | ✅ (`http://localhost:*`) | ✅ (`localhost:*`) |
 
 On a client's instance, use their own domain instead, for example `https://mobile.northpeak.com`.
 
@@ -139,7 +139,7 @@ app/
   App.tsx                         shell: header + Guide / Dashboard / Spotter / Assistant tabs
   .env                            Liveboard / tab / model IDs (read by src/config.ts)
   src/
-    options.ts                    ★ catalog of the five options (Guide, pickers, numbering)
+    options.ts                    ★ catalog of the six options (Guide, pickers, numbering)
     config.ts                     ThoughtSpot host, IDs, backend URL
     auth.ts                       getAuthToken() – used by every embed
     backend.ts                    fetch helper for our backend (readable errors)
@@ -148,24 +148,24 @@ app/
       ThoughtSpotWebView.tsx      ★ the web SDK in a WebView: page, origin, token bridge, messages
       emulator.ts                 software drawing on Android emulators (overlapping tiles)
       EmulatorSafeWebView.tsx     the same fix for the React Native SDK's WebView (see metro.config.js)
-      PrefetchWarmup.tsx          prefetch() at app launch (options 1, 3, 4)
+      PrefetchWarmup.tsx          prefetch() at app launch (options 1, 4, 5)
     ui/                           OptionPicker · LoadingOverlay · Markdown · useLayout (phone / tablet)
     features/
       guide/GuideScreen.tsx       overview of all options
       dashboard/
-        DashboardScreen.tsx       option picker + Reload (host event) for 1, 2 and 6
+        DashboardScreen.tsx       option picker + Reload (host event) for 1, 2 and 3
         LiveboardNativeSdk.tsx    option 2
-        LiveboardMobileFilters.tsx option 6 (option 2 + filters made for phones)
+        LiveboardMobileFilters.tsx option 3 (option 2 + filters made for phones)
         LiveboardWebSdk.tsx       option 1
       spotter/
-        SpotterScreen.tsx         option 3
+        SpotterScreen.tsx         option 4
       assistant/
-        AssistantScreen.tsx       chat UI for 4 and 5
+        AssistantScreen.tsx       chat UI for 5 and 6
         useSpotterChat.ts         ★ the MCP conversation flow (create → send → poll), no UI
         types.ts                  MCP response shapes
         AnswerCard.tsx            picks 4 or 5 for each answer
-        EmbeddedAnswer.tsx        option 4
-        NativeAnswer.tsx          option 5
+        EmbeddedAnswer.tsx        option 5
+        NativeAnswer.tsx          option 6
 server/
   index.js                        HTTP routes the app calls
   config.js                       settings from .env (the only place credentials live)
@@ -186,7 +186,7 @@ Each option is one self-contained file that starts with a comment block explaini
 
 ### The web SDK in a WebView ([`ThoughtSpotWebView.tsx`](app/src/thoughtspot/ThoughtSpotWebView.tsx))
 
-Options 1, 3 and 4 use the regular web SDK. This component does the plumbing once:
+Options 1, 4 and 5 use the regular web SDK. This component does the plumbing once:
 
 1. Builds a tiny HTML page that loads `@thoughtspot/visual-embed-sdk` from a CDN and calls `init()`.
 2. Loads it with `source={{ html, baseUrl: 'http://localhost:4000' }}`. **The `baseUrl` sets the page's origin**, which is what ThoughtSpot checks against CSP and CORS.
@@ -206,10 +206,10 @@ The app and every embed use the same Northpeak palette and the same font, Inter,
 | Where | How |
 |---|---|
 | The app's own screens | `colors` and `fonts` from `theme.ts`. React Native needs one font file per weight, so styles use `fontFamily: fonts.bold` rather than `fontWeight`. App.tsx loads the fonts at launch (`@expo-google-fonts/inter`). |
-| Every embed (options 1–4) | `thoughtSpotCustomizations`, passed to `init()` in both SDKs: documented `--ts-var-*` CSS variables for page, text, tiles, Liveboard groups, axes, buttons, chips, menus and Spotter, plus `--ts-var-root-font-family`. |
+| Every embed (options 1–5) | `thoughtSpotCustomizations`, passed to `init()` in both SDKs: documented `--ts-var-*` CSS variables for page, text, tiles, Liveboard groups, axes, buttons, chips, menus and Spotter, plus `--ts-var-root-font-family`. |
 | The font inside ThoughtSpot | `customCSSUrl` points at Google Fonts' stylesheet for Inter, which holds its `@font-face` declarations. No `rules_UNSTABLE` anywhere: its selectors can break with any ThoughtSpot release. In production, host your own CSS file (fonts, and variables if you like) and point `customCSSUrl` at it. ThoughtSpot must allow `fonts.gstatic.com` as a CSP font-src (already the case on se-thoughtspot-cloud). |
 
-Two things have no CSS variable: **chart series colours** (set by an admin in the instance's style settings, as a chart colour palette) and the Liveboard's **AI highlights card**. So embedded charts keep ThoughtSpot's palette, while option 5's native charts use the brand green.
+Two things have no CSS variable: **chart series colours** (set by an admin in the instance's style settings, as a chart colour palette) and the Liveboard's **AI highlights card**. So embedded charts keep ThoughtSpot's palette, while option 6's native charts use the brand green.
 
 ### Making Liveboards load faster: prefetch and pre-render
 
@@ -217,10 +217,10 @@ ThoughtSpot documents two techniques, and the app uses both ([`config.ts`](app/s
 
 | Technique | What it does | Where | Gain |
 |---|---|---|---|
-| **Prefetch** | Downloads ThoughtSpot's static files (JS/CSS) before the user opens an embed | Options 1, 3 and 4: an invisible WebView at app launch calls `prefetch(host, [PrefetchFeatures.LiveboardEmbed])` ([`PrefetchWarmup.tsx`](app/src/thoughtspot/PrefetchWarmup.tsx)). Option 2: `callPrefetch: true` in the RN SDK's `init()` | Small: saves the file downloads only |
+| **Prefetch** | Downloads ThoughtSpot's static files (JS/CSS) before the user opens an embed | Options 1, 4 and 5: an invisible WebView at app launch calls `prefetch(host, [PrefetchFeatures.LiveboardEmbed])` ([`PrefetchWarmup.tsx`](app/src/thoughtspot/PrefetchWarmup.tsx)). Options 2 and 3: `callPrefetch: true` in the RN SDK's `init()` | Small: saves the file downloads only |
 | **Pre-render** | Loads the Liveboard itself ahead of time and keeps it alive | The Dashboard tab mounts in the background at launch, on option 1; hidden tabs and Liveboard options stay mounted, so they are never rebuilt | Large: the Liveboard is already on screen when the user opens it |
 
-Prefetch for options 1, 3 and 4 works because their WebViews share one page origin, and so one cache (see `PAGE_ORIGIN` in `ThoughtSpotWebView.tsx`). Hidden screens use `opacity: 0` rather than `display: none`, so a pre-rendered Liveboard keeps loading in the background. The trade-off: pre-rendering spends one Liveboard load at launch even if the user never opens the Dashboard.
+Prefetch for options 1, 4 and 5 works because their WebViews share one page origin, and so one cache (see `PAGE_ORIGIN` in `ThoughtSpotWebView.tsx`). Hidden screens use `opacity: 0` rather than `display: none`, so a pre-rendered Liveboard keeps loading in the background. The trade-off: pre-rendering spends one Liveboard load at launch even if the user never opens the Dashboard.
 
 ---
 
@@ -245,7 +245,7 @@ and the host event from React Native: `webRef.current.run('embed.trigger(HostEve
 
 **Filters and `visibleActions`.** The Liveboard's filters (State, Region, Date, Item Type) show as chips in the header. `visibleActions` is an allowlist, and the filter chips count as an action: leave out `Action.AllLiveboardFilters` (SDK 1.53+, ThoughtSpot 26.10+) and they disappear, even with the header on. The React Native SDK's `Action` enum doesn't have it yet, so option 2 passes its string value, `'allLiveboardFilters'`.
 
-We recommend this option over the React Native SDK: it's the same SDK and the same `ThoughtSpotWebView` plumbing as Spotter (option 3), so one technique covers Liveboards and Spotter, and new web SDK features work right away. The Dashboard opens on it, and it's the one pre-rendered at launch.
+We recommend this option over the React Native SDK: it's the same SDK and the same `ThoughtSpotWebView` plumbing as Spotter (option 4), so one technique covers Liveboards and Spotter, and new web SDK features work right away. The Dashboard opens on it, and it's the one pre-rendered at launch.
 
 ### ② Liveboard with the React Native SDK
 
@@ -265,7 +265,7 @@ embedRef.current?.trigger(HostEvent.Reload);        // host event: app → embed
 
 - It's the same `init`, view config, `EmbedEvent` and `HostEvent` model as the web SDK, so web skills carry over.
 - Behind the scenes it renders a WebView that loads a ThoughtSpot-hosted shell page (`mobile-embed-shell.vercel.app`) and runs the web SDK there.
-- **Limitation:** version 1.0 only supports `LiveboardEmbed`. Everything else uses the technique in options 1, 3 and 4.
+- **Limitation:** version 1.0 only supports `LiveboardEmbed`. Everything else uses the technique in options 1, 4 and 5.
 
 **Compare 1 and 2 on stage:** same view config, same events, same host event; only the plumbing differs. Option 1 is exactly what you'd write on a website, so any web SDK version or feature works on day one. A concrete example: `fullHeight`, which the React Native SDK doesn't expose yet. Since SDK 1.52 it also turns on lazy loading (`lazyLoadingForFullHeight`), so tiles load as the user scrolls instead of all at once.
 
@@ -277,9 +277,23 @@ embedRef.current?.trigger(HostEvent.Reload);        // host event: app → embed
 | Mid-size tablet in portrait, 600dp | ~830px | Two columns (with `enable2ColumnLayout`) |
 | Tablet in landscape, 960dp | ~1,320px | Full 12-column grid |
 
-At zoom 1 a tablet lands in ThoughtSpot's one-column band (600–960px), with very tall tiles. Without `enable2ColumnLayout`, Liveboards jump from the 12-column grid straight to one column. Spotter's new UI is responsive, so options 3 and 4 run at zoom 1, except that Spotter zooms out when its frame is shorter than 580px (see ③).
+At zoom 1 a tablet lands in ThoughtSpot's one-column band (600–960px), with very tall tiles. Without `enable2ColumnLayout`, Liveboards jump from the 12-column grid straight to one column. Spotter's new UI is responsive, so options 4 and 5 run at zoom 1, except that Spotter zooms out when its frame is shorter than 580px (see ④).
 
-### ③ Spotter with the web SDK in a WebView
+### ③ Liveboard with the React Native SDK, mobile filters
+
+Option 2 with two changes to the filters, for phones ([`LiveboardMobileFilters.tsx`](app/src/features/dashboard/LiveboardMobileFilters.tsx)):
+
+```tsx
+<LiveboardNativeSdk
+  customizations={ONE_ROW_CHIPS}   // rules_UNSTABLE, on this embed only: chips on one scrollable row
+  centralizedFilters={false}       // one filter per dialog, as in option 1
+/>
+```
+
+- **Chips on one row.** On a phone the chips wrap onto several rows and push the tiles down. There is no variable or view-config option for a single row, so this takes CSS selectors (`rules_UNSTABLE`), passed through the embed's own `customizations` prop (merged over `init()`'s). Unsupported: re-test on every ThoughtSpot upgrade.
+- **One filter per dialog.** By default, tapping a chip in option 2 opens "Apply filters and parameters", listing every filter. The web SDK (1.46+) turns that off by default with `isCentralizedLiveboardFilterUXEnabled: false`. The React Native SDK 1.0 runs a shell page with web SDK 1.41, which drops that prop, so option 3 passes it through `additionalFlags` instead.
+
+### ④ Spotter with the web SDK in a WebView
 
 ```js
 new SpotterEmbed('#root', {
@@ -297,7 +311,7 @@ Two mobile rules, both without touching ThoughtSpot's CSS:
 
 Don't override ThoughtSpot's CSS to force a size: that breaks whenever ThoughtSpot ships a UI update.
 
-### ④⑤ Headless Spotter via the Spotter MCP Server
+### ⑤⑥ Headless Spotter via the Spotter MCP Server
 
 Here ThoughtSpot is the **analytics agent** and the app owns the **whole UI**. The backend ([`server/spotterMcp.js`](server/spotterMcp.js)) is an MCP client for `https://agent.thoughtspot.app/token/mcp`, authenticated with `Authorization: Bearer <token>` and `x-ts-host: <instance>`. The Spotter 3 workflow maps one-to-one onto our routes, and [`useSpotterChat.ts`](app/src/features/assistant/useSpotterChat.ts) drives it:
 
@@ -314,7 +328,7 @@ The update types ([`types.ts`](app/src/features/assistant/types.ts)):
 
 Each answer is then shown one of two ways. The toggle switches every answer in the conversation, so you can compare them on the same result:
 
-| | **④ Embedded charts** | **⑤ Native charts** |
+| | **⑤ Embedded charts** | **⑥ Native charts** |
 |---|---|---|
 | What you see | Spotter's own interactive chart: chart/table toggle, filters, drill down, download, pin | The answer's rows drawn with React Native views: KPI tile, column chart, bars or table |
 | How | `iframe_url` + `startAutoMCPFrameRenderer()` in a ThoughtSpotWebView | `answer_id` → `POST /api/answer-data` → `/api/rest/2.0/report/answer` (CSV) |
@@ -322,7 +336,7 @@ Each answer is then shown one of two ways. The toggle switches every answer in t
 | Look and feel | ThoughtSpot's, themed with CSS variables | Fully yours: design system, fonts, accessibility |
 | Cost | One WebView per answer: a second or two to load | Light, but you maintain the chart code |
 
-**④ Embedded.** Loaded as-is, the `iframe_url` would need a ThoughtSpot login, so the Visual Embed SDK handles auth:
+**⑤ Embedded.** Loaded as-is, the `iframe_url` would need a ThoughtSpot login, so the Visual Embed SDK handles auth:
 
 ```js
 startAutoMCPFrameRenderer({ frameParams: { width: '100%', height: '100%' } });
@@ -333,7 +347,7 @@ document.getElementById('root').appendChild(frame);
 
 `startAutoMCPFrameRenderer()` watches the page for iframes marked `tsmcp=true` and replaces each one with an authenticated ThoughtSpot embed. The answer is ThoughtSpot's embedded app, with the same 580px minimum height as Spotter, so the 480px card zooms its page to 0.83 (`zoomToFitHeight`) rather than cutting off the bottom of the chart.
 
-**⑤ Native.** The `answer_id` is `{"session_id": "…", "gen_no": 2}`, exactly what the export API needs. The backend exports that answer as CSV (with Spotter's filters) and the app picks a visual:
+**⑥ Native.** The `answer_id` is `{"session_id": "…", "gen_no": 2}`, exactly what the export API needs. The backend exports that answer as CSV (with Spotter's filters) and the app picks a visual:
 
 | Data shape | Native visual | Example question |
 |---|---|---|
@@ -348,7 +362,7 @@ The export doesn't guarantee row order, so time series are re-sorted chronologic
 
 ## Running a client workshop
 
-1. **Guide tab.** Present the five options and the one rule (tokens from your backend).
+1. **Guide tab.** Present the six options and the one rule (tokens from your backend).
 2. **Dashboard, 1 then 2.** Show the same Liveboard both ways, open both files side by side, and press Reload in each (host events). Try changing `visibleActions` or the colours in `theme.ts`: Expo reloads instantly.
 3. **Spotter.** Ready-made conversational analytics. Mention the responsive new experience.
 4. **Assistant, 4 then 5.** Ask *"Total sales by region"*, then the follow-up *"Now only for the West region, by item type"*. Flip the toggle to compare embedded and native charts on the same answers.
@@ -375,7 +389,7 @@ curl https://api.anthropic.com/v1/messages \
 - **Tokens per user:** use trusted auth (`secret_key`) and mint a token for the *signed-in* user, not one shared demo account.
 - **Orgs:** a token logs into exactly one Org, and a secret key only works for its own Org. If embeds or Spotter can't find your objects, check the token's Org (`GET /api/rest/2.0/auth/session/user` → `current_org`). `TS_ORG_ID` picks the Org when using a password.
 - **Pin the MCP version:** replace `api-version=latest` with a date (`api-version=YYYY-MM-DD`) so tool responses don't change underneath you.
-- **Saved chats:** MCP answer sessions expire after about 8 hours. To replay stored conversations with option 4, use the SDK's conversation replay parameters instead of storing `iframe_url`s.
+- **Saved chats:** MCP answer sessions expire after about 8 hours. To replay stored conversations with option 5, use the SDK's conversation replay parameters instead of storing `iframe_url`s.
 - **HTTPS everywhere:** iOS App Transport Security blocks plain `http` in release builds. Deploy the backend behind HTTPS.
 - **Your own origins:** set the WebView `baseUrl` to your own domain and allowlist it in CSP and CORS.
 - **Builds:** Expo Go is for learning. Ship with a development or EAS build (`npx eas-cli build`).
@@ -390,7 +404,7 @@ curl https://api.anthropic.com/v1/messages \
 | Top of Spotter cut off (tablet in landscape), or bottom of an embedded answer chart cut off | ThoughtSpot's embedded app needs at least 580px of height. Zoom the page to fit with `zoomToFitHeight()` ([`ThoughtSpotWebView.tsx`](app/src/thoughtspot/ThoughtSpotWebView.tsx)), as Spotter and the answer cards do. |
 | Inspect what's inside a WebView | In development builds, open `chrome://inspect` in Chrome on your Mac: every app WebView is listed (`webviewDebuggingEnabled`). |
 | Liveboard spinner for minutes on the emulator | The emulator is slow; a phone takes seconds. For live demos, mirror a USB phone (`npm run demo:usb`). |
-| On the emulator, tiles drawn over other tiles, or white bands over charts | Android emulators put GPU-drawn WebViews on screen wrongly; the page itself is correct (Chromium's own screenshot is fine) and real phones don't show it. On emulators only, WebViews draw in software (`androidLayerType="software"`, detected with `expo-device`, see `emulator.ts`). `ThoughtSpotWebView` sets it for options 1, 3 and 4. Options 2 and 6 run inside ThoughtSpot's React Native SDK, which creates its own WebView and takes no WebView props, so `metro.config.js` hands the SDK a wrapper (`EmulatorSafeWebView.tsx`) instead of `react-native-webview`. After changing `metro.config.js`, restart Expo with `--clear`. |
+| On the emulator, tiles drawn over other tiles, or white bands over charts | Android emulators put GPU-drawn WebViews on screen wrongly; the page itself is correct (Chromium's own screenshot is fine) and real phones don't show it. On emulators only, WebViews draw in software (`androidLayerType="software"`, detected with `expo-device`, see `emulator.ts`). `ThoughtSpotWebView` sets it for options 1, 4 and 5. Options 2 and 3 run inside ThoughtSpot's React Native SDK, which creates its own WebView and takes no WebView props, so `metro.config.js` hands the SDK a wrapper (`EmulatorSafeWebView.tsx`) instead of `react-native-webview`. After changing `metro.config.js`, restart Expo with `--clear`. |
 | On the emulator, no on-screen keyboard while typing on the Mac | The emulator treats the Mac's keyboard as a physical keyboard, so Android shows only a small Gboard toolbar. Type on the Mac as usual; press **Alt+K** in a text field (or the toolbar's ☰ → *Show on-screen keyboard*) to bring up the full keyboard. `npm run demo` turns on the Android setting this needs (`show_ime_with_hard_keyboard`); with Gboard, also turn on Gboard settings → Physical keyboard → *Show on-screen keyboard*. |
 | Expo Go shows a developer menu on launch | Expo Go's own menu on first launch: close it. |
 
