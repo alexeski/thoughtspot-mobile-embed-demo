@@ -59,10 +59,14 @@ Northpeak demo – commands (run from the project folder)
 
 Each demo command starts the backend + Expo and opens the app on the device
 (over Wi-Fi, you open it by scanning the QR code).
+Add -- --clear to clear Expo's bundler cache first, e.g. after changing
+app/metro.config.js or adding a package:  npm run demo:tablet -- --clear
 Press r in that terminal to reload the app, Ctrl+C to stop.
 Emulators are the virtual devices in Android Studio → Device Manager.
 `;
 
+// --clear: start Expo with an empty bundler cache (npm run demo -- --clear)
+const CLEAR = process.argv.includes('--clear');
 const MODE = process.argv.includes('--help')
   ? 'help'
   : process.argv.find((a) => a.startsWith('--device='))?.split('=')[1] ?? 'phone';
@@ -212,7 +216,9 @@ await waitFor(() => portInUse(BACKEND_PORT), 20_000, 'the backend to start');
 // over Wi-Fi it serves on the Mac's network address (--lan).
 step('Starting Expo');
 const host = MODE === 'wifi' ? lanIp() : 'localhost';
-const expo = spawn('npx', ['expo', 'start', MODE === 'wifi' ? '--lan' : '--localhost', '--port', String(METRO_PORT)], {
+const expoArgs = ['expo', 'start', MODE === 'wifi' ? '--lan' : '--localhost', '--port', String(METRO_PORT)];
+if (CLEAR) expoArgs.push('--clear');
+const expo = spawn('npx', expoArgs, {
   cwd: join(ROOT, 'app'),
   env: { ...process.env, ...(BACKEND_PORT !== 4000 && { EXPO_PUBLIC_BACKEND_URL: `http://${host}:${BACKEND_PORT}` }) },
   stdio: 'inherit',

@@ -59,6 +59,8 @@ All commands run from the project folder. `npm run help` prints this list.
 | `npm run demo:tablet` | Start the demo on the **tablet emulator** (landscape) |
 | `npm run demo:usb` | Start the demo on your **real Android phone** over USB |
 | `npm run demo:wifi` | Start the demo on your **real phone over Wi-Fi**, no cable: scan the QR code with Expo Go |
+
+Add `-- --clear` to any demo command to start Expo with an empty bundler cache, e.g. `npm run demo:tablet -- --clear`. Needed after changing `app/metro.config.js` or adding a package. (Without the `--`, npm takes `--clear` as its own option and stops with `EUNKNOWNCONFIG`.)
 | `npm run backend` | Start only the backend (port 4000) |
 | `npm run app` | Start only Expo: scan the QR code with Expo Go, or press `a` for an emulator |
 | `npm run help` | Print this list |
