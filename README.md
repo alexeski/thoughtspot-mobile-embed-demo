@@ -298,11 +298,13 @@ Option 2 with two changes to the filters, for phones ([`LiveboardMobileFilters.t
 ```js
 new SpotterEmbed('#root', {
   worksheetId: MODEL_ID,
-  disableSourceSelection: true,
+  hideSourceSelection: true,        // no data source picker (disableSourceSelection would only grey it out)
   updatedSpotterExperience: true,   // redesigned, responsive UI (26.9+, SDK 1.52+)
   updatedSpotterChatPrompt: true,   // Spotter 3 prompt (+ menu, deep analysis)
 }).render();
 ```
+
+The **New chat** button in the bar is a host event: `spotter.trigger(HostEvent.ResetSpotterConversation)`. (`HostEvent.StartNewSpotterConversation` also exists, but needs chat history turned on for the instance.)
 
 Two mobile rules, both without touching ThoughtSpot's CSS:
 

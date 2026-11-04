@@ -16,20 +16,20 @@
 // Don't override ThoughtSpot's CSS – that breaks whenever ThoughtSpot ships a
 // UI update.
 // ─────────────────────────────────────────────────────────────────────────────
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { MODEL_ID } from '../../config';
 import { colors } from '../../theme';
-import ThoughtSpotWebView, { zoomToFitHeight } from '../../thoughtspot/ThoughtSpotWebView';
+import ThoughtSpotWebView, { ThoughtSpotWebViewHandle, zoomToFitHeight } from '../../thoughtspot/ThoughtSpotWebView';
 import LoadingOverlay from '../../ui/LoadingOverlay';
-import OptionPicker from '../../ui/OptionPicker';
+import OptionPicker, { BarButton } from '../../ui/OptionPicker';
 
 // Runs inside the WebView, after init() (see ThoughtSpotWebView).
 const script = `
-  const spotter = new SpotterEmbed('#root', {
+  window.spotter = new SpotterEmbed('#root', {
     worksheetId: '${MODEL_ID}',   // pin Spotter to the same model as the Liveboard
-    disableSourceSelection: true,
+    hideSourceSelection: true,    // no data source picker: Spotter stays on this model
     frameParams: { width: '100%', height: '100%' },
 
     // New Spotter 3 experience (ThoughtSpot 26.9+, SDK 1.52+). On 26.11+, the
@@ -55,6 +55,7 @@ const script = `
 `;
 
 export default function SpotterScreen() {
+  const webRef = useRef<ThoughtSpotWebViewHandle>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   // Zoom that makes 580px fit the space available. Measured once, on first
@@ -71,12 +72,20 @@ export default function SpotterScreen() {
 
   return (
     <View style={styles.container}>
-      <OptionPicker tab="spotter" value="spotterWebSdk" />
+      <OptionPicker
+        tab="spotter"
+        value="spotterWebSdk"
+        // ③ Host event: clear the conversation and start over. (StartNewSpotterConversation
+        // also exists, but needs chat history turned on for the instance.)
+        right={<BarButton label="New chat" onPress={() => webRef.current?.run('spotter.trigger(HostEvent.ResetSpotterConversation)')} />}
+      />
       <View
         style={styles.container}
         onLayout={(e) => setZoom((z) => z ?? zoomToFitHeight(e.nativeEvent.layout.height))}
       >
-        {zoom && <ThoughtSpotWebView script={script} onMessage={onMessage} viewportScale={zoom} style={styles.webview} />}
+        {zoom && (
+          <ThoughtSpotWebView ref={webRef} script={script} onMessage={onMessage} viewportScale={zoom} style={styles.webview} />
+        )}
         <LoadingOverlay loading={loading} error={error} label="Starting Spotter…" />
       </View>
     </View>
