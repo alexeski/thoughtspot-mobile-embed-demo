@@ -23,20 +23,27 @@ export const fonts = {
   extrabold: 'Inter_800ExtraBold',
 };
 
-// The same font on the web side: Inter from Google Fonts. It's a variable font,
-// so one file covers every weight. ThoughtSpot loads it inside its own frame,
-// which needs fonts.gstatic.com in the CSP font-src allowlist
-// (Develop → Customizations → Security settings).
+// The same font on the web side: Inter from Google Fonts. This stylesheet holds
+// its @font-face declarations (a variable font, so every weight). ThoughtSpot
+// loads it inside its own frame through customCSSUrl (below), and the font
+// files come from fonts.gstatic.com, which must be in the CSP font-src
+// allowlist (Develop → Customizations → Security settings). Both already work
+// on se-thoughtspot-cloud.
 export const WEB_FONT_FAMILY = "Inter, 'Helvetica Neue', Arial, sans-serif";
-const INTER_WOFF2 = 'https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa1ZL7W0Q5nw.woff2';
-export const WEB_FONT_FACE = `@font-face { font-family: 'Inter'; font-style: normal; font-weight: 100 900; font-display: swap; src: url(${INTER_WOFF2}) format('woff2'); }`;
+export const WEB_FONT_CSS_URL = 'https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap';
 
 // The brand, passed to ThoughtSpot so embedded content matches the app. Only
-// documented --ts-var-* CSS variables (see the CSS variables reference).
+// documented --ts-var-* CSS variables (see the CSS variables reference) and a
+// stylesheet URL for the font: no rules_UNSTABLE, whose selectors can change
+// with any ThoughtSpot release.
 // Chart series colours aren't CSS variables: they come from the instance's
 // style settings (Admin → Style customization → chart colour palette).
 export const thoughtSpotCustomizations = {
   style: {
+    // One stylesheet ThoughtSpot loads into its frame: here, Inter's
+    // @font-face declarations. In production, host your own CSS file (fonts,
+    // and variables if you like) on your domain or CDN and point to it here.
+    customCSSUrl: WEB_FONT_CSS_URL,
     customCSS: {
       variables: {
         // Page, text and font
@@ -94,17 +101,6 @@ export const thoughtSpotCustomizations = {
         // Spotter: conversation and prompt panels
         '--ts-var-spotter-input-background': colors.surface,
         '--ts-var-spotter-prompt-background': colors.surface,
-      },
-      // The one non-variable entry: declaring the font. ThoughtSpot documents
-      // @font-face here (or in a customCSSUrl file, better for production).
-      rules_UNSTABLE: {
-        '/* inter */ @font-face': {
-          'font-family': 'Inter',
-          'font-style': 'normal',
-          'font-weight': '100 900',
-          'font-display': 'swap',
-          src: `url(${INTER_WOFF2}) format('woff2')`,
-        },
       },
     },
   },

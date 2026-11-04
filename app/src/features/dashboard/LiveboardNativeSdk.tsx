@@ -37,6 +37,11 @@ init({
   callPrefetch: true,
 });
 
+// visibleActions is an allowlist, and the filter chips are an action too
+// (Action.AllLiveboardFilters in the web SDK 1.53+). The React Native SDK's
+// Action enum doesn't have it yet, so pass its value: actions are plain strings.
+const ALL_LIVEBOARD_FILTERS = 'allLiveboardFilters' as Action;
+
 export default function LiveboardNativeSdk({ ref }: { ref?: React.Ref<LiveboardHandle> }) {
   const embedRef = useLiveboardRef();
   const [loading, setLoading] = useState(true);
@@ -54,10 +59,13 @@ export default function LiveboardNativeSdk({ ref }: { ref?: React.Ref<LiveboardH
         ref={embedRef}
         liveboardId={LIVEBOARD_ID}
         activeTabId={LIVEBOARD_TAB_ID}
-        hideLiveboardHeader // no filters on this Liveboard, so the header bar only takes space
         hideTabPanel
+        // The Liveboard's filters in a compact header, no title (see LiveboardWebSdk.tsx)
+        isLiveboardCompactHeaderEnabled
+        showLiveboardTitle={false}
+        showLiveboardDescription={false}
         enable2ColumnLayout // two columns on mid-size screens instead of one (see LiveboardWebSdk.tsx)
-        visibleActions={[Action.DrillDown, Action.AddFilter, Action.Share]}
+        visibleActions={[ALL_LIVEBOARD_FILTERS, Action.DrillDown, Action.AddFilter, Action.Share]}
         // ④ Embed events: the embed tells the app what happened
         onLiveboardRendered={() => setLoading(false)}
         onError={(e: unknown) => {

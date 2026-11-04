@@ -203,7 +203,7 @@ The app and every embed use the same Northpeak palette and the same font, Inter,
 |---|---|
 | The app's own screens | `colors` and `fonts` from `theme.ts`. React Native needs one font file per weight, so styles use `fontFamily: fonts.bold` rather than `fontWeight`. App.tsx loads the fonts at launch (`@expo-google-fonts/inter`). |
 | Every embed (options 1–4) | `thoughtSpotCustomizations`, passed to `init()` in both SDKs: documented `--ts-var-*` CSS variables for page, text, tiles, Liveboard groups, axes, buttons, chips, menus and Spotter, plus `--ts-var-root-font-family`. |
-| The font inside ThoughtSpot | One `@font-face` for Inter (a variable font, so one file covers every weight) in `rules_UNSTABLE`, as ThoughtSpot documents for fonts. In production, put it in a `customCSSUrl` file instead. ThoughtSpot must allow `fonts.gstatic.com` as a CSP font-src (already the case on se-thoughtspot-cloud). |
+| The font inside ThoughtSpot | `customCSSUrl` points at Google Fonts' stylesheet for Inter, which holds its `@font-face` declarations. No `rules_UNSTABLE` anywhere: its selectors can break with any ThoughtSpot release. In production, host your own CSS file (fonts, and variables if you like) and point `customCSSUrl` at it. ThoughtSpot must allow `fonts.gstatic.com` as a CSP font-src (already the case on se-thoughtspot-cloud). |
 
 Two things have no CSS variable: **chart series colours** (set by an admin in the instance's style settings, as a chart colour palette) and the Liveboard's **AI highlights card**. So embedded charts keep ThoughtSpot's palette, while option 5's native charts use the brand green.
 
@@ -227,8 +227,9 @@ Prefetch for options 1, 3 and 4 works because their WebViews share one page orig
 ```js
 window.embed = new LiveboardEmbed('#root', {
   liveboardId: LIVEBOARD_ID,
-  hideLiveboardHeader: true,
-  visibleActions: [Action.DrillDown, Action.AddFilter, Action.Share],
+  isLiveboardCompactHeaderEnabled: true, // the Liveboard's filter chips in a compact header…
+  showLiveboardTitle: false,             // …without the title (the app already names the screen)
+  visibleActions: [Action.AllLiveboardFilters, Action.DrillDown, Action.AddFilter, Action.Share],
   fullHeight: true,            // the page scrolls, and tiles lazy-load as they scroll into view
   enable2ColumnLayout: true,   // two columns on mid-size screens instead of one
 });
@@ -237,6 +238,8 @@ embed.render();
 ```
 
 and the host event from React Native: `webRef.current.run('embed.trigger(HostEvent.Reload)')`.
+
+**Filters and `visibleActions`.** The Liveboard's filters (State, Region, Date, Item Type) show as chips in the header. `visibleActions` is an allowlist, and the filter chips count as an action: leave out `Action.AllLiveboardFilters` (SDK 1.53+, ThoughtSpot 26.10+) and they disappear, even with the header on. The React Native SDK's `Action` enum doesn't have it yet, so option 2 passes its string value, `'allLiveboardFilters'`.
 
 We recommend this option over the React Native SDK: it's the same SDK and the same `ThoughtSpotWebView` plumbing as Spotter (option 3), so one technique covers Liveboards and Spotter, and new web SDK features work right away. The Dashboard opens on it, and it's the one pre-rendered at launch.
 
@@ -248,8 +251,9 @@ init({ thoughtSpotHost, authType: AuthType.TrustedAuthTokenCookieless, getAuthTo
 <LiveboardEmbed
   ref={embedRef}
   liveboardId={LIVEBOARD_ID}
-  hideLiveboardHeader                              // no filters here, so drop the header bar
-  visibleActions={[Action.DrillDown, Action.AddFilter, Action.Share]}
+  isLiveboardCompactHeaderEnabled                  // filter chips in a compact header, no title
+  showLiveboardTitle={false}
+  visibleActions={['allLiveboardFilters' as Action, Action.DrillDown, Action.AddFilter, Action.Share]}
   onLiveboardRendered={() => setLoading(false)}   // embed event → app
 />
 embedRef.current?.trigger(HostEvent.Reload);        // host event: app → embed

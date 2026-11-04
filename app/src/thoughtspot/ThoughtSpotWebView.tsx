@@ -5,7 +5,7 @@ import { WebView as RNWebView, WebViewMessageEvent } from 'react-native-webview'
 
 import { getAuthToken } from '../auth';
 import { TS_HOST } from '../config';
-import { colors, thoughtSpotCustomizations, WEB_FONT_FACE, WEB_FONT_FAMILY } from '../theme';
+import { colors, thoughtSpotCustomizations, WEB_FONT_CSS_URL, WEB_FONT_FAMILY } from '../theme';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // ThoughtSpotWebView – run the regular (web) Visual Embed SDK inside a WebView.
@@ -71,8 +71,8 @@ function buildHtml(script: string, background: string, scale: number) {
 <html>
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=${scale}, maximum-scale=${scale}, user-scalable=no" />
+  <link rel="stylesheet" href="${WEB_FONT_CSS_URL}" />
   <style>
-    ${WEB_FONT_FACE}
     html, body, #root { margin: 0; height: 100%; background: ${background}; }
     body { font-family: ${WEB_FONT_FAMILY}; color: ${colors.text}; } /* the app's font, for anything outside ThoughtSpot's frame */
     html { -webkit-text-size-adjust: 100%; } /* stop Android from enlarging text */

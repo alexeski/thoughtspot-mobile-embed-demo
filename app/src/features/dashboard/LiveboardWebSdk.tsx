@@ -33,9 +33,17 @@ const script = `
   window.embed = new LiveboardEmbed('#root', {
     liveboardId: '${LIVEBOARD_ID}',
     activeTabId: ${JSON.stringify(LIVEBOARD_TAB_ID)},
-    hideLiveboardHeader: true, // no filters on this Liveboard, so the header bar only takes space
     hideTabPanel: true,
-    visibleActions: [Action.DrillDown, Action.AddFilter, Action.Share],
+    // The Liveboard's filters (State, Region, Date, Item Type) in a compact
+    // header. The app's tab bar already names the screen, so no title or
+    // description: the header is just the filter chips and the Share button.
+    isLiveboardCompactHeaderEnabled: true,
+    showLiveboardTitle: false,
+    showLiveboardDescription: false,
+    // visibleActions is an allowlist: anything not listed is hidden, and that
+    // includes the filter chips. AllLiveboardFilters brings them back
+    // (SDK 1.53+, ThoughtSpot 26.10+).
+    visibleActions: [Action.AllLiveboardFilters, Action.DrillDown, Action.AddFilter, Action.Share],
     fullHeight: true, // one scroll bar (the page's) + lazy loading of tiles
     // Without it, Liveboards jump from the 12-column grid (wider than ~1024px)
     // straight to one column. This adds a two-column step for mid-size screens
