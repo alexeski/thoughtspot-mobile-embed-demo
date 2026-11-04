@@ -12,8 +12,8 @@
 // Plain state-driven tabs keep the shell easy to read; a real app would use
 // Expo Router or React Navigation.
 // ─────────────────────────────────────────────────────────────────────────────
-import React, { useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { BackHandler, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { Inter_400Regular, Inter_600SemiBold, Inter_700Bold, Inter_800ExtraBold, useFonts } from '@expo-google-fonts/inter';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
@@ -54,6 +54,17 @@ export default function App() {
     setVisited((v) => new Set(v).add(next));
     setTab(next);
   }
+
+  // Android's Back button (a right-click in the emulator) returns to the Guide
+  // instead of closing the app. On the Guide it exits as usual.
+  useEffect(() => {
+    const sub = BackHandler.addEventListener('hardwareBackPress', () => {
+      if (tab === 'guide') return false; // default: leave the app
+      setTab('guide');
+      return true;
+    });
+    return () => sub.remove();
+  }, [tab]);
 
   // Guide → open a given option in its tab
   function open(key: OptionKey) {
