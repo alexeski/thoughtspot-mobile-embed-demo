@@ -142,7 +142,7 @@ app/
     config.ts                     ThoughtSpot host, IDs, backend URL
     auth.ts                       getAuthToken() – used by every embed
     backend.ts                    fetch helper for our backend (readable errors)
-    theme.ts                      brand colours + ThoughtSpot CSS variables
+    theme.ts                      brand colours, fonts + ThoughtSpot CSS variables
     thoughtspot/
       ThoughtSpotWebView.tsx      ★ the web SDK in a WebView: page, origin, token bridge, messages
       PrefetchWarmup.tsx          prefetch() at app launch (options 1, 3, 4)
@@ -194,6 +194,18 @@ Callers pass only the few lines of SDK code to run, for example:
 ```tsx
 <ThoughtSpotWebView script={`new SpotterEmbed('#root', { worksheetId: '…' }).render()`} />
 ```
+
+### One look and feel: the app and ThoughtSpot share a theme ([`theme.ts`](app/src/theme.ts))
+
+The app and every embed use the same Northpeak palette and the same font, Inter, so ThoughtSpot content reads as part of the app:
+
+| Where | How |
+|---|---|
+| The app's own screens | `colors` and `fonts` from `theme.ts`. React Native needs one font file per weight, so styles use `fontFamily: fonts.bold` rather than `fontWeight`. App.tsx loads the fonts at launch (`@expo-google-fonts/inter`). |
+| Every embed (options 1–4) | `thoughtSpotCustomizations`, passed to `init()` in both SDKs: documented `--ts-var-*` CSS variables for page, text, tiles, Liveboard groups, axes, buttons, chips, menus and Spotter, plus `--ts-var-root-font-family`. |
+| The font inside ThoughtSpot | One `@font-face` for Inter (a variable font, so one file covers every weight) in `rules_UNSTABLE`, as ThoughtSpot documents for fonts. In production, put it in a `customCSSUrl` file instead. ThoughtSpot must allow `fonts.gstatic.com` as a CSP font-src (already the case on se-thoughtspot-cloud). |
+
+Two things have no CSS variable: **chart series colours** (set by an admin in the instance's style settings, as a chart colour palette) and the Liveboard's **AI highlights card**. So embedded charts keep ThoughtSpot's palette, while option 5's native charts use the brand green.
 
 ### Making Liveboards load faster: prefetch and pre-render
 
@@ -371,6 +383,7 @@ curl https://api.anthropic.com/v1/messages \
 | Inspect what's inside a WebView | In development builds, open `chrome://inspect` in Chrome on your Mac: every app WebView is listed (`webviewDebuggingEnabled`). |
 | Liveboard spinner for minutes on the emulator | The emulator is slow; a phone takes seconds. For live demos, mirror a USB phone (`npm run demo:usb`). |
 | On the emulator, tiles drawn over other tiles, or white bands over charts | Android emulators put GPU-drawn WebViews on screen wrongly; the page itself is correct (Chromium's own screenshot is fine) and real phones don't show it. On emulators only, `ThoughtSpotWebView` draws in software (`androidLayerType="software"`, detected with `expo-device`), which fixes options 1, 3 and 4. Option 2's WebView is inside ThoughtSpot's React Native SDK, which doesn't expose that setting, so it can still glitch on an emulator. |
+| On the emulator, no on-screen keyboard while typing on the Mac | The emulator treats the Mac's keyboard as a physical keyboard, so Android shows only a small Gboard toolbar. Type on the Mac as usual; press **Alt+K** in a text field (or the toolbar's ☰ → *Show on-screen keyboard*) to bring up the full keyboard. `npm run demo` turns on the Android setting this needs (`show_ime_with_hard_keyboard`); with Gboard, also turn on Gboard settings → Physical keyboard → *Show on-screen keyboard*. |
 | Expo Go shows a developer menu on launch | Expo Go's own menu on first launch: close it. |
 
 ## References

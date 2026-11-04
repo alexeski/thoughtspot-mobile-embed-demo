@@ -16,7 +16,7 @@ import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 
 import { backend } from '../../backend';
-import { colors } from '../../theme';
+import { colors, fonts } from '../../theme';
 import type { SpotterAnswer } from './types';
 
 type Cell = string | number;
@@ -179,28 +179,28 @@ const styles = StyleSheet.create({
     padding: 12,
     gap: 8,
   },
-  title: { fontWeight: '700', color: colors.text, textTransform: 'capitalize' },
-  filter: { fontSize: 11, color: colors.muted },
-  error: { color: '#B3261E', fontSize: 12 },
+  title: { fontFamily: fonts.bold, color: colors.text, textTransform: 'capitalize' },
+  filter: { fontFamily: fonts.regular, fontSize: 11, color: colors.muted },
+  error: { color: '#B3261E', fontFamily: fonts.regular, fontSize: 12 },
 
   kpi: { alignItems: 'center', paddingVertical: 8 },
-  kpiValue: { fontSize: 34, fontWeight: '800', color: colors.brand },
-  kpiLabel: { fontSize: 12, color: colors.muted },
+  kpiValue: { fontSize: 34, fontFamily: fonts.extrabold, color: colors.brand },
+  kpiLabel: { fontFamily: fonts.regular, fontSize: 12, color: colors.muted },
 
-  axis: { fontSize: 11, color: colors.muted, marginBottom: 4 },
+  axis: { fontFamily: fonts.regular, fontSize: 11, color: colors.muted, marginBottom: 4 },
   columns: { height: 120, flexDirection: 'row', alignItems: 'flex-end', gap: 3 },
   columnSlot: { flex: 1, height: '100%', justifyContent: 'flex-end' },
   column: { backgroundColor: colors.brand, borderTopLeftRadius: 3, borderTopRightRadius: 3 },
   ticks: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 4 },
-  tick: { fontSize: 10, color: colors.muted },
+  tick: { fontFamily: fonts.regular, fontSize: 10, color: colors.muted },
 
   barRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  barLabel: { width: 90, fontSize: 12, color: colors.text },
+  barLabel: { width: 90, fontFamily: fonts.regular, fontSize: 12, color: colors.text },
   barTrack: { flex: 1, height: 14, backgroundColor: colors.background, borderRadius: 4, overflow: 'hidden' },
   bar: { height: '100%', backgroundColor: colors.brand, borderRadius: 4 },
-  barValue: { width: 56, fontSize: 12, textAlign: 'right', color: colors.text, fontVariant: ['tabular-nums'] },
+  barValue: { width: 56, fontFamily: fonts.regular, fontSize: 12, textAlign: 'right', color: colors.text, fontVariant: ['tabular-nums'] },
 
   tr: { flexDirection: 'row', borderBottomWidth: StyleSheet.hairlineWidth, borderColor: colors.border },
-  td: { flex: 1, fontSize: 12, paddingVertical: 4, color: colors.text },
-  th: { fontWeight: '700' },
+  td: { flex: 1, fontFamily: fonts.regular, fontSize: 12, paddingVertical: 4, color: colors.text },
+  th: { fontFamily: fonts.bold },
 });

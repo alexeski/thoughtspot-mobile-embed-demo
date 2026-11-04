@@ -4,7 +4,7 @@ import React from 'react';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { OPTIONS, OptionKey, optionsForTab } from '../../options';
-import { colors } from '../../theme';
+import { colors, fonts } from '../../theme';
 import { useLayout } from '../../ui/useLayout';
 
 const SECTIONS = [
@@ -55,14 +55,14 @@ export default function GuideScreen({ onOpen }: { onOpen: (key: OptionKey) => vo
 
 const styles = StyleSheet.create({
   page: { padding: 16, gap: 8, backgroundColor: colors.background },
-  h1: { fontSize: 20, fontWeight: '800', color: colors.text },
-  h2: { fontSize: 16, fontWeight: '700', color: colors.brand },
-  p: { fontSize: 13, lineHeight: 19, color: colors.text },
+  h1: { fontSize: 20, fontFamily: fonts.extrabold, color: colors.text },
+  h2: { fontSize: 16, fontFamily: fonts.bold, color: colors.brand },
+  p: { fontFamily: fonts.regular, fontSize: 13, lineHeight: 19, color: colors.text },
   section: { marginTop: 12, gap: 8 },
   cardList: { gap: 8 },
   columns: { flexDirection: 'row', flexWrap: 'wrap' },
   cardHalf: { flexBasis: '48%', flexGrow: 1 },
-  sectionIntro: { fontSize: 13, color: colors.muted },
+  sectionIntro: { fontFamily: fonts.regular, fontSize: 13, color: colors.muted },
   card: {
     backgroundColor: colors.surface,
     borderRadius: 12,
@@ -80,11 +80,11 @@ const styles = StyleSheet.create({
     color: '#fff',
     textAlign: 'center',
     lineHeight: 26,
-    fontWeight: '800',
+    fontFamily: fonts.extrabold,
     overflow: 'hidden',
   },
-  cardTitle: { flex: 1, fontSize: 14, fontWeight: '700', color: colors.text },
-  label: { fontSize: 11, fontWeight: '700', color: colors.muted, textTransform: 'uppercase', marginTop: 6 },
+  cardTitle: { flex: 1, fontSize: 14, fontFamily: fonts.bold, color: colors.text },
+  label: { fontSize: 11, fontFamily: fonts.bold, color: colors.muted, textTransform: 'uppercase', marginTop: 6 },
   file: { fontSize: 11, color: colors.muted, fontFamily: 'monospace', marginTop: 8 },
-  open: { color: colors.brand, fontWeight: '700', alignSelf: 'flex-end' },
+  open: { color: colors.brand, fontFamily: fonts.bold, alignSelf: 'flex-end' },
 });

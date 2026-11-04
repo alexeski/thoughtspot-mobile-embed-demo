@@ -20,7 +20,7 @@ import {
 } from 'react-native';
 
 import type { OptionKey } from '../../options';
-import { colors } from '../../theme';
+import { colors, fonts } from '../../theme';
 import Markdown from '../../ui/Markdown';
 import OptionPicker, { BarButton } from '../../ui/OptionPicker';
 import AnswerCard from './AnswerCard';
@@ -121,10 +121,10 @@ export default function AssistantScreen({
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.background },
-  caption: { color: colors.muted, fontSize: 13 },
+  caption: { color: colors.muted, fontFamily: fonts.regular, fontSize: 13 },
   // On tablets the conversation stays a readable column instead of spanning the screen
   list: { padding: 16, gap: 12, width: '100%', maxWidth: 820, alignSelf: 'center' },
-  intro: { color: colors.text, fontSize: 16, fontWeight: '600', marginBottom: 4 },
+  intro: { color: colors.text, fontSize: 16, fontFamily: fonts.semibold, marginBottom: 4 },
   chip: {
     backgroundColor: colors.surface,
     borderColor: colors.border,
@@ -133,10 +133,10 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 14,
   },
-  chipText: { color: colors.brand },
+  chipText: { fontFamily: fonts.semibold, color: colors.brand },
   bubble: { borderRadius: 16, padding: 12, gap: 10, maxWidth: '92%' },
   user: { backgroundColor: colors.brand, alignSelf: 'flex-end' },
-  userText: { color: '#fff', fontSize: 15 },
+  userText: { color: '#fff', fontFamily: fonts.regular, fontSize: 15 },
   spotter: { backgroundColor: colors.surface, alignSelf: 'flex-start', width: '92%' },
   step: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   inputBar: { padding: 12, borderTopWidth: 1, borderColor: colors.border, backgroundColor: colors.surface },
@@ -148,9 +148,10 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     paddingHorizontal: 14,
     paddingVertical: 10,
+    fontFamily: fonts.regular,
     fontSize: 15,
     color: colors.text,
   },
   send: { backgroundColor: colors.accent, borderRadius: 20, paddingHorizontal: 18, justifyContent: 'center' },
-  sendText: { color: '#fff', fontWeight: '700' },
+  sendText: { color: '#fff', fontFamily: fonts.bold },
 });

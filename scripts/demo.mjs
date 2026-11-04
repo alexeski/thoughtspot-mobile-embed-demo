@@ -187,6 +187,11 @@ if (device) {
   // host is localhost, which adb reverse maps back to this Mac.
   step(`Forwarding the device's localhost:${BACKEND_PORT} and :${METRO_PORT} to this Mac`);
   for (const port of [BACKEND_PORT, METRO_PORT]) adb('-s', device.serial, 'reverse', `tcp:${port}`, `tcp:${port}`);
+
+  // Emulators treat the Mac's keyboard as a physical keyboard, and Android then
+  // hides the on-screen one. Keep it available, as on a real phone: type on the
+  // Mac, and press Alt+K in a text field to show the on-screen keyboard.
+  if (device.emulator) adb('-s', device.serial, 'shell', 'settings', 'put', 'secure', 'show_ime_with_hard_keyboard', '1');
 }
 
 // ── 4. Backend ───────────────────────────────────────────────────────────────

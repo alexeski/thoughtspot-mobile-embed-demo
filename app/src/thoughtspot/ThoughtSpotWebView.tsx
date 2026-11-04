@@ -5,7 +5,7 @@ import { WebView as RNWebView, WebViewMessageEvent } from 'react-native-webview'
 
 import { getAuthToken } from '../auth';
 import { TS_HOST } from '../config';
-import { colors, thoughtSpotCustomizations } from '../theme';
+import { colors, thoughtSpotCustomizations, WEB_FONT_FACE, WEB_FONT_FAMILY } from '../theme';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // ThoughtSpotWebView – run the regular (web) Visual Embed SDK inside a WebView.
@@ -72,7 +72,9 @@ function buildHtml(script: string, background: string, scale: number) {
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=${scale}, maximum-scale=${scale}, user-scalable=no" />
   <style>
+    ${WEB_FONT_FACE}
     html, body, #root { margin: 0; height: 100%; background: ${background}; }
+    body { font-family: ${WEB_FONT_FAMILY}; color: ${colors.text}; } /* the app's font, for anything outside ThoughtSpot's frame */
     html { -webkit-text-size-adjust: 100%; } /* stop Android from enlarging text */
   </style>
   <script src="${SDK_URL}"></script>
@@ -99,7 +101,7 @@ function buildHtml(script: string, background: string, scale: number) {
       post({ type: 'REQUEST_AUTH_TOKEN', id });
     });
 
-    // ① Same init() as on a website – cookieless trusted auth, brand colours.
+    // ① Same init() as on a website – cookieless trusted auth, the app's colours and font.
     init({
       thoughtSpotHost: '${TS_HOST}',
       authType: AuthType.TrustedAuthTokenCookieless,

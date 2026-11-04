@@ -15,6 +15,7 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
+import { Inter_400Regular, Inter_600SemiBold, Inter_700Bold, Inter_800ExtraBold, useFonts } from '@expo-google-fonts/inter';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
 import AssistantScreen from './src/features/assistant/AssistantScreen';
@@ -23,7 +24,7 @@ import GuideScreen from './src/features/guide/GuideScreen';
 import SpotterScreen from './src/features/spotter/SpotterScreen';
 import { PRERENDER_DASHBOARD } from './src/config';
 import { OPTIONS, OptionKey, TabKey } from './src/options';
-import { colors } from './src/theme';
+import { colors, fonts } from './src/theme';
 import PrefetchWarmup from './src/thoughtspot/PrefetchWarmup';
 import { useLayout } from './src/ui/useLayout';
 
@@ -37,6 +38,8 @@ const TABS: { key: TabKey; label: string }[] = [
 export default function App() {
   const [tab, setTab] = useState<TabKey>('guide');
   const { isShort } = useLayout(); // landscape: one-line header, more room for embeds
+  // The brand font (see fonts in theme.ts); ThoughtSpot gets the same one
+  const [fontsLoaded] = useFonts({ Inter_400Regular, Inter_600SemiBold, Inter_700Bold, Inter_800ExtraBold });
   // Selected option per tab (lifted here so the Guide can open a specific one)
   const [dashboardOption, setDashboardOption] = useState<OptionKey>('liveboardWebSdk');
   const [assistantOption, setAssistantOption] = useState<OptionKey>('mcpEmbeddedCharts');
@@ -65,6 +68,8 @@ export default function App() {
     spotter: <SpotterScreen />,
     assistant: <AssistantScreen option={assistantOption} onOptionChange={setAssistantOption} />,
   };
+
+  if (!fontsLoaded) return null; // fonts are bundled, so this takes a moment
 
   return (
     <SafeAreaProvider>
@@ -107,15 +112,15 @@ export default function App() {
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.brandDark },
   header: { backgroundColor: colors.brandDark, paddingHorizontal: 16, paddingTop: 8, paddingBottom: 12 },
-  brand: { color: '#fff', fontSize: 20, fontWeight: '800', letterSpacing: 0.3 },
-  subtitle: { color: '#BFD8CF', fontSize: 12, marginTop: 2 },
+  brand: { color: '#fff', fontSize: 20, fontFamily: fonts.extrabold, letterSpacing: 0.3 },
+  subtitle: { color: '#BFD8CF', fontFamily: fonts.regular, fontSize: 12, marginTop: 2 },
   headerShort: { flexDirection: 'row', alignItems: 'baseline', gap: 12, paddingTop: 4, paddingBottom: 6 },
-  brandShort: { fontSize: 16 },
+  brandShort: { fontFamily: fonts.regular, fontSize: 16 },
   screens: { flex: 1 },
   screen: { ...StyleSheet.absoluteFill, backgroundColor: colors.background },
   hidden: { opacity: 0, zIndex: -1 },
   tabBar: { flexDirection: 'row', backgroundColor: colors.surface, borderTopWidth: 1, borderColor: colors.border },
   tab: { flex: 1, alignItems: 'center', paddingVertical: 12 },
-  tabLabel: { color: colors.muted, fontWeight: '600' },
+  tabLabel: { color: colors.muted, fontFamily: fonts.semibold },
   tabActive: { color: colors.brand },
 });

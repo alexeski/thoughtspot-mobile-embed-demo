@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { colors } from '../theme';
+import { colors, fonts } from '../theme';
 
 // Spotter narrates in Markdown. This tiny renderer covers what it uses most
 // (headings, bullets, **bold**). Swap in a library for anything richer.
@@ -35,7 +35,7 @@ export default function Markdown({ text }: { text: string }) {
 }
 
 const styles = StyleSheet.create({
-  body: { color: colors.text, fontSize: 15, lineHeight: 21 },
-  bold: { fontWeight: '700' },
-  heading: { color: colors.text, fontSize: 15, fontWeight: '700', marginTop: 6 },
+  body: { color: colors.text, fontFamily: fonts.regular, fontSize: 15, lineHeight: 21 },
+  bold: { fontFamily: fonts.bold },
+  heading: { color: colors.text, fontSize: 15, fontFamily: fonts.bold, marginTop: 6 },
 });

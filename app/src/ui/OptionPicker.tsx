@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { OPTIONS, Option, OptionKey, optionsForTab } from '../options';
-import { colors } from '../theme';
+import { colors, fonts } from '../theme';
 import { useLayout } from './useLayout';
 
 // The bar at the top of each screen: a toggle between the options that solve
@@ -89,10 +89,10 @@ const styles = StyleSheet.create({
   },
   option: { paddingVertical: 5, paddingHorizontal: 10, borderRadius: 14 },
   optionActive: { backgroundColor: colors.brand },
-  optionText: { fontSize: 12, color: colors.muted, fontWeight: '600' },
+  optionText: { fontSize: 12, color: colors.muted, fontFamily: fonts.semibold },
   optionTextActive: { color: '#fff' },
-  single: { fontSize: 13, color: colors.brand, fontWeight: '700' },
-  how: { fontSize: 11, color: colors.text },
+  single: { fontSize: 13, color: colors.brand, fontFamily: fonts.bold },
+  how: { fontFamily: fonts.regular, fontSize: 11, color: colors.text },
   file: { fontSize: 10, color: colors.muted, fontFamily: 'monospace' },
-  button: { color: colors.brand, fontWeight: '600' },
+  button: { color: colors.brand, fontFamily: fonts.semibold },
 });
