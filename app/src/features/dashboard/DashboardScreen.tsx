@@ -45,7 +45,8 @@ export default function DashboardScreen({
         onChange={onOptionChange}
         right={<BarButton label="Reload" onPress={() => refs[option as DashboardOption].current?.reload()} />}
       />
-      <View style={styles.container}>
+      {/* A small gap under the option bar: the Liveboard's header card starts at the very top of its page */}
+      <View style={[styles.container, styles.embedArea]}>
         {[...mounted].map((key) => {
           const Liveboard = OPTIONS[key];
           const visible = key === option;
@@ -68,5 +69,6 @@ export default function DashboardScreen({
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.background },
+  embedArea: { marginTop: 8 },
   hidden: { opacity: 0 },
 });
