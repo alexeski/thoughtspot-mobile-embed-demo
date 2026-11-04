@@ -58,10 +58,13 @@ type Props = {
   background?: string;
   style?: StyleProp<ViewStyle>;
   nestedScrollEnabled?: boolean;
+  // Added to init()'s customizations for this page only, e.g. Spotter's icon
+  // and text (see SpotterScreen.tsx). Pass a constant: a new object reloads the page.
+  extraCustomizations?: Record<string, unknown>;
   ref?: React.Ref<ThoughtSpotWebViewHandle>;
 };
 
-function buildHtml(script: string, background: string, scale: number) {
+function buildHtml(script: string, background: string, scale: number, extra: Record<string, unknown> = {}) {
   return `<!doctype html>
 <html>
 <head>
@@ -101,7 +104,7 @@ function buildHtml(script: string, background: string, scale: number) {
       thoughtSpotHost: '${TS_HOST}',
       authType: AuthType.TrustedAuthTokenCookieless,
       getAuthToken,
-      customizations: ${JSON.stringify(thoughtSpotCustomizations)},
+      customizations: ${JSON.stringify({ ...thoughtSpotCustomizations, ...extra })},
     });
 
     // The caller's embed code:
@@ -125,10 +128,14 @@ export default function ThoughtSpotWebView({
   background = colors.background,
   style,
   nestedScrollEnabled,
+  extraCustomizations,
   ref,
 }: Props) {
   const webRef = useRef<RawWebViewHandle>(null);
-  const html = useMemo(() => buildHtml(script, background, viewportScale), [script, background, viewportScale]);
+  const html = useMemo(
+    () => buildHtml(script, background, viewportScale, extraCustomizations),
+    [script, background, viewportScale, extraCustomizations],
+  );
 
   // ④ React Native → page
   useImperativeHandle(ref, () => ({

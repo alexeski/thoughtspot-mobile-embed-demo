@@ -28,7 +28,7 @@ export async function getToken() {
   return cached.token;
 }
 
-// ── Answer export (option 5 – native charts) ─────────────────────────────────
+// ── Answer export (option 6 – native charts) ─────────────────────────────────
 // Every Spotter answer is identified by a session id + generation number.
 // Exporting it returns *that* answer's rows, with the filters Spotter applied.
 export async function exportAnswerCsv(sessionId, genNo) {

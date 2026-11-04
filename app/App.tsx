@@ -25,6 +25,7 @@ import SpotterScreen from './src/features/spotter/SpotterScreen';
 import { PRERENDER_DASHBOARD } from './src/config';
 import { OPTIONS, OptionKey, TabKey } from './src/options';
 import { colors, fonts } from './src/theme';
+import Logo from './src/brand/Logo';
 import PrefetchWarmup from './src/thoughtspot/PrefetchWarmup';
 import { useLayout } from './src/ui/useLayout';
 
@@ -76,7 +77,10 @@ export default function App() {
       <SafeAreaView style={styles.root} edges={['top', 'bottom']}>
         <StatusBar style="light" />
         <View style={[styles.header, isShort && styles.headerShort]}>
-          <Text style={[styles.brand, isShort && styles.brandShort]}>▲ Northpeak Outfitters</Text>
+          <View style={styles.brandRow}>
+            <Logo size={isShort ? 22 : 30} />
+            <Text style={[styles.brand, isShort && styles.brandShort]}>Northpeak Outfitters</Text>
+          </View>
           <Text style={styles.subtitle}>ThoughtSpot mobile embedding · {TABS.find((t) => t.key === tab)!.label}</Text>
         </View>
 
@@ -112,9 +116,10 @@ export default function App() {
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.brandDark },
   header: { backgroundColor: colors.brandDark, paddingHorizontal: 16, paddingTop: 8, paddingBottom: 12 },
+  brandRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
   brand: { color: '#fff', fontSize: 20, fontFamily: fonts.extrabold, letterSpacing: 0.3 },
   subtitle: { color: '#BFD8CF', fontFamily: fonts.regular, fontSize: 12, marginTop: 2 },
-  headerShort: { flexDirection: 'row', alignItems: 'baseline', gap: 12, paddingTop: 4, paddingBottom: 6 },
+  headerShort: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingTop: 4, paddingBottom: 6 },
   brandShort: { fontFamily: fonts.regular, fontSize: 16 },
   screens: { flex: 1 },
   screen: { ...StyleSheet.absoluteFill, backgroundColor: colors.background },

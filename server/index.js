@@ -1,10 +1,10 @@
 // Northpeak backend – the HTTP routes the mobile app calls.
 //
-//   GET  /api/token                      → ThoughtSpot token for the embeds   (options 1–4)
-//   POST /api/chat/sessions              → Spotter MCP step 1                 (options 4–5)
+//   GET  /api/token                      → ThoughtSpot token for the embeds   (options 1–5)
+//   POST /api/chat/sessions              → Spotter MCP step 1                 (options 5–6)
 //   POST /api/chat/sessions/:id/messages → Spotter MCP step 2
 //   GET  /api/chat/sessions/:id/updates  → Spotter MCP step 3
-//   POST /api/answer-data                → an answer's exact rows             (option 5)
+//   POST /api/answer-data                → an answer's exact rows             (option 6)
 //
 // Files:  config.js (settings) · thoughtspot.js (REST API) · spotterMcp.js (MCP client)
 //         answerCsv.js (CSV → JSON)
@@ -56,7 +56,7 @@ app.get('/api/chat/sessions/:id/updates', async (req, res) => {
   res.json(await callSpotter('get_session_updates', { analytical_session_id: req.params.id }));
 });
 
-// ── Answer data (option 5 – native charts) ───────────────────────────────────
+// ── Answer data (option 6 – native charts) ───────────────────────────────────
 // An MCP answer's answer_id is '{"session_id": "...", "gen_no": 2}' – exactly
 // what the export API needs to return that answer's rows.
 app.post('/api/answer-data', async (req, res) => {

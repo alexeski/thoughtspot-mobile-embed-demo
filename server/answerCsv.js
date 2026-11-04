@@ -1,4 +1,4 @@
-// Turns ThoughtSpot's answer CSV export into { columns, rows, filters } (option 5).
+// Turns ThoughtSpot's answer CSV export into { columns, rows, filters } (option 6).
 //
 // The export starts with a small preamble before the table:
 //   "Data extract produced by ..."

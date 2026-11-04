@@ -14,6 +14,13 @@ export const LIVEBOARD_TAB_ID = process.env.EXPO_PUBLIC_LIVEBOARD_TAB_ID || unde
 // Spotter (native UI and MCP agent) is pinned to the same model.
 export const MODEL_ID = process.env.EXPO_PUBLIC_MODEL_ID ?? 'cd252e5c-b552-49a8-821d-3eadaa049cca';
 
+// Where assets/brand/northpeak-icon-sprite.svg is hosted: it puts the Northpeak
+// logo in place of Spotter's icon (option 4). ThoughtSpot only loads it over
+// HTTPS (the SDK strips "https://" and ThoughtSpot adds it back, so http:// and
+// data: URLs don't work), from a host allowed in its CSP. cdn.jsdelivr.net is
+// allowed on every instance. Empty: Spotter keeps its own icon.
+export const ICON_SPRITE_URL = process.env.EXPO_PUBLIC_ICON_SPRITE_URL || undefined;
+
 // ── Performance ──────────────────────────────────────────────────────────────
 // Pre-render: load the Dashboard tab in the background at app launch, so the
 // Liveboard is ready by the time the user opens it. This is the mobile version

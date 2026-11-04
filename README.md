@@ -209,7 +209,9 @@ The app and every embed use the same Northpeak palette and the same font, Inter,
 | Every embed (options 1–5) | `thoughtSpotCustomizations`, passed to `init()` in both SDKs: documented `--ts-var-*` CSS variables for page, text, tiles, Liveboard groups, axes, buttons, chips, menus and Spotter, plus `--ts-var-root-font-family`. |
 | The font inside ThoughtSpot | `customCSSUrl` points at Google Fonts' stylesheet for Inter, which holds its `@font-face` declarations. No `rules_UNSTABLE` anywhere: its selectors can break with any ThoughtSpot release. In production, host your own CSS file (fonts, and variables if you like) and point `customCSSUrl` at it. ThoughtSpot must allow `fonts.gstatic.com` as a CSP font-src (already the case on se-thoughtspot-cloud). |
 
-Two things have no CSS variable: **chart series colours** (set by an admin in the instance's style settings, as a chart colour palette) and the Liveboard's **AI highlights card**. So embedded charts keep ThoughtSpot's palette, while option 6's native charts use the brand green.
+The Liveboard's AI insight tile (Key Highlights) is a white card like the others, through `--ts-var-liveboard-insight-tile-background` (+ `-font-color`, `-icon-color`), instead of ThoughtSpot's blue gradient. One thing has no CSS variable: **chart series colours** (set by an admin in the instance's style settings, as a chart colour palette). So embedded charts keep ThoughtSpot's palette, while option 6's native charts use the brand green.
+
+The app's logo ([`Logo.tsx`](app/src/brand/Logo.tsx), drawn with `react-native-svg`) is a ridge line under a rising sun. The same shapes are in [`northpeak-icon-sprite.svg`](app/assets/brand/northpeak-icon-sprite.svg), which replaces Spotter's icon (option 4).
 
 ### Making Liveboards load faster: prefetch and pre-render
 
@@ -305,6 +307,17 @@ new SpotterEmbed('#root', {
 ```
 
 The **New chat** button in the bar is a host event: `spotter.trigger(HostEvent.ResetSpotterConversation)`. (`HostEvent.StartNewSpotterConversation` also exists, but needs chat history turned on for the instance.)
+
+**Spotter in Northpeak's brand.** This WebView's `init()` gets extra customizations (`extraCustomizations` on `ThoughtSpotWebView`), so Spotter reads as the app's own assistant, the *Northpeak Guide*:
+
+| What | How |
+|---|---|
+| Greeting, subtitle, placeholder, the word "Spotter" | `customizations.content.strings`: the exact English text on screen → our text |
+| Spotter's icon → the Northpeak logo | `customizations.iconSpriteUrl`: an SVG sprite with a `<symbol id="rd-icon-spotter">`. ThoughtSpot loads it **over HTTPS only**, from a host its CSP allows (`cdn.jsdelivr.net` always is), so it's off until `EXPO_PUBLIC_ICON_SPRITE_URL` is set |
+| ThoughtSpot logo and label on answer cards | `spotterChatConfig: { hideToolResponseCardBranding: true, toolResponseCardBrandingLabel: 'Northpeak' }` |
+| Prompt border | `--ts-var-ai-gradient-color`: brand green → orange |
+
+Put branding in `init()`, not in the embed's own `customizations`: the embed's are sent in the frame's URL, where an `http://` sprite URL gets the frame refused (403).
 
 Two mobile rules, both without touching ThoughtSpot's CSS:
 

@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" style="width:0;height:0;visibility:hidden;">
+  <!-- ThoughtSpot icon sprite: each <symbol> replaces the ThoughtSpot icon with
+       the same id. rd-icon-spotter is Spotter's icon. Same shapes as
+       src/brand/Logo.tsx. -->
+  <symbol id="rd-icon-spotter" viewBox="0 0 64 64">
+    <rect width="64" height="64" rx="16" fill="#1F5F4F"/>
+    <circle cx="45" cy="19" r="6" fill="#E8833A"/>
+    <path d="M10 46 L26 22 L35 35 L42 27 L54 46" fill="none" stroke="#FFFFFF" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+  </symbol>
+</svg>

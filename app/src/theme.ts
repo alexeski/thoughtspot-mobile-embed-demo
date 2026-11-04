@@ -73,6 +73,11 @@ export const thoughtSpotCustomizations = {
         '--ts-var-liveboard-group-tile-description-font-color': colors.muted,
         '--ts-var-liveboard-notetitle-heading-font-color': colors.brand,
         '--ts-var-liveboard-notetitle-body-font-color': colors.text,
+        // The AI insight tile ("Key Highlights"): a white card like the others,
+        // instead of ThoughtSpot's blue gradient
+        '--ts-var-liveboard-insight-tile-background': colors.surface,
+        '--ts-var-liveboard-insight-tile-font-color': colors.text,
+        '--ts-var-liveboard-insight-tile-icon-color': colors.brand,
         // Chart axes
         '--ts-var-axis-title-color': colors.muted,
         '--ts-var-axis-title-font-family': WEB_FONT_FAMILY,
@@ -101,6 +106,8 @@ export const thoughtSpotCustomizations = {
         // Spotter: conversation and prompt panels
         '--ts-var-spotter-input-background': colors.surface,
         '--ts-var-spotter-prompt-background': colors.surface,
+        // The "AI" gradient around Spotter's prompt box: brand green to orange
+        '--ts-var-ai-gradient-color': `linear-gradient(90deg, ${colors.brand}, ${colors.accent})`,
       },
     },
   },

@@ -1,4 +1,4 @@
-// Client for the ThoughtSpot Spotter MCP Server (options 4 and 5).
+// Client for the ThoughtSpot Spotter MCP Server (options 5 and 6).
 //
 // The Spotter MCP Server is a hosted MCP endpoint. With bearer-token auth, every
 // request carries the ThoughtSpot token plus the instance host. Spotter itself

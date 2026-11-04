@@ -19,11 +19,28 @@
 import React, { useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import { MODEL_ID } from '../../config';
+import { ICON_SPRITE_URL, MODEL_ID } from '../../config';
 import { colors } from '../../theme';
 import ThoughtSpotWebView, { ThoughtSpotWebViewHandle, zoomToFitHeight } from '../../thoughtspot/ThoughtSpotWebView';
 import LoadingOverlay from '../../ui/LoadingOverlay';
 import OptionPicker, { BarButton } from '../../ui/OptionPicker';
+
+// Spotter in Northpeak's colours and words, so it reads as part of the app:
+// our logo for Spotter's icon, our assistant's name, and our own welcome text.
+// init()-level customizations for this WebView only. Their keys are the exact
+// English text ThoughtSpot shows (find them on screen); the values replace it.
+const ASSISTANT_NAME = 'Northpeak Guide';
+const SPOTTER_BRANDING = {
+  ...(ICON_SPRITE_URL && { iconSpriteUrl: ICON_SPRITE_URL }), // see config.ts
+  content: {
+    strings: {
+      "Hi! I'm Spotter, your AI data analyst": `Hi! I'm the ${ASSISTANT_NAME}`,
+      "Let's make sense of your data together": 'Ask me about our sales, stores and products',
+      'Enter your question': 'Ask a question about Northpeak',
+      Spotter: ASSISTANT_NAME, // anywhere else it says Spotter
+    },
+  },
+};
 
 // Runs inside the WebView, after init() (see ThoughtSpotWebView).
 const script = `
@@ -36,6 +53,12 @@ const script = `
     // newer surface is spotterExperienceVersion: SpotterExperienceVersion.SPOTTER_2026_11.
     updatedSpotterExperience: true,
     updatedSpotterChatPrompt: true,
+
+    // Answer cards: no ThoughtSpot logo, and our name instead of "ThoughtSpot"
+    spotterChatConfig: {
+      hideToolResponseCardBranding: true,
+      toolResponseCardBrandingLabel: 'Northpeak',
+    },
 
     // No sharing from the app: the answers' Share, and Spotter 3's
     // share-conversation buttons (header and history menu).
@@ -84,7 +107,14 @@ export default function SpotterScreen() {
         onLayout={(e) => setZoom((z) => z ?? zoomToFitHeight(e.nativeEvent.layout.height))}
       >
         {zoom && (
-          <ThoughtSpotWebView ref={webRef} script={script} onMessage={onMessage} viewportScale={zoom} style={styles.webview} />
+          <ThoughtSpotWebView
+            ref={webRef}
+            script={script}
+            extraCustomizations={SPOTTER_BRANDING}
+            onMessage={onMessage}
+            viewportScale={zoom}
+            style={styles.webview}
+          />
         )}
         <LoadingOverlay loading={loading} error={error} label="Starting Spotter…" />
       </View>
