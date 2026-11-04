@@ -7,14 +7,14 @@ import type { OptionKey } from '../../options';
 import { colors } from '../../theme';
 import OptionPicker, { BarButton } from '../../ui/OptionPicker';
 import LiveboardNativeSdk from './LiveboardNativeSdk';
-import LiveboardOneRowChips from './LiveboardOneRowChips';
+import LiveboardMobileFilters from './LiveboardMobileFilters';
 import LiveboardWebSdk from './LiveboardWebSdk';
 import type { LiveboardHandle } from './types';
 
 const OPTIONS = {
   liveboardWebSdk: LiveboardWebSdk,
   liveboardNativeSdk: LiveboardNativeSdk,
-  liveboardOneRowChips: LiveboardOneRowChips,
+  liveboardMobileFilters: LiveboardMobileFilters,
 } as const;
 type DashboardOption = keyof typeof OPTIONS;
 
@@ -29,7 +29,7 @@ export default function DashboardScreen({
   const refs = {
     liveboardWebSdk: useRef<LiveboardHandle>(null),
     liveboardNativeSdk: useRef<LiveboardHandle>(null),
-    liveboardOneRowChips: useRef<LiveboardHandle>(null),
+    liveboardMobileFilters: useRef<LiveboardHandle>(null),
   };
 
   // Keep every option alive once it has been shown, so switching back and

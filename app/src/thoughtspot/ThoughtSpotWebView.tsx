@@ -1,11 +1,11 @@
 import React, { useImperativeHandle, useMemo, useRef } from 'react';
-import { Platform, StyleProp, ViewStyle } from 'react-native';
-import * as Device from 'expo-device';
+import { StyleProp, ViewStyle } from 'react-native';
 import { WebView as RNWebView, WebViewMessageEvent } from 'react-native-webview';
 
 import { getAuthToken } from '../auth';
 import { TS_HOST } from '../config';
 import { colors, thoughtSpotCustomizations, WEB_FONT_CSS_URL, WEB_FONT_FAMILY } from '../theme';
+import { ANDROID_LAYER_TYPE } from './emulator'; // software drawing on Android emulators
 
 // ─────────────────────────────────────────────────────────────────────────────
 // ThoughtSpotWebView – run the regular (web) Visual Embed SDK inside a WebView.
@@ -37,11 +37,6 @@ const SDK_URL = 'https://cdn.jsdelivr.net/npm/@thoughtspot/visual-embed-sdk@1.53
 export const TS_MIN_HEIGHT = 580;
 export const zoomToFitHeight = (frameHeight: number) => Math.min(1, frameHeight / TS_MIN_HEIGHT);
 
-// Android emulators composite GPU-drawn WebViews wrongly: pieces of one tile
-// show up over another (Chromium's own output is correct; real phones are
-// fine). Drawing the WebView in software avoids it. Emulators only – on a
-// real phone, GPU drawing is faster and uses less memory.
-const ANDROID_LAYER_TYPE = Platform.OS === 'android' && !Device.isDevice ? 'software' : undefined;
 
 export type ThoughtSpotWebViewHandle = {
   // Runs JavaScript in the page, e.g. "embed.trigger(HostEvent.Reload)"

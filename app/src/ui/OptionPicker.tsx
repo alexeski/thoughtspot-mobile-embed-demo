@@ -87,7 +87,7 @@ const styles = StyleSheet.create({
     borderColor: colors.border,
     padding: 2,
   },
-  option: { paddingVertical: 5, paddingHorizontal: 10, borderRadius: 14 },
+  option: { paddingVertical: 5, paddingHorizontal: 8, borderRadius: 14 },
   optionActive: { backgroundColor: colors.brand },
   optionText: { fontSize: 12, color: colors.muted, fontFamily: fonts.semibold },
   optionTextActive: { color: '#fff' },

@@ -43,28 +43,21 @@ init({
 // Action enum doesn't have it yet, so pass its value: actions are plain strings.
 const ALL_LIVEBOARD_FILTERS = 'allLiveboardFilters' as Action;
 
-// Client CSS lab: another Liveboard, and the centralized filter dialog flag.
-// The React Native SDK forwards every prop to its shell page, but that page
-// runs web SDK 1.41, which predates isCentralizedLiveboardFilterUXEnabled
-// (1.46) and drops it. additionalFlags (web SDK 1.9+) passes it to
-// ThoughtSpot as a URL flag instead, which the shell does understand.
+// Client CSS lab: another Liveboard, header type and dialog setting.
 const LAB_ON = LAB.mode !== 'off';
-const labProps = LAB_ON
-  ? ({
-      isLiveboardCompactHeaderEnabled: LAB.compactHeader,
-      ...(LAB.centralizedFilters !== undefined && {
-        additionalFlags: { isCentralizedLiveboardFilterUXEnabled: LAB.centralizedFilters },
-      }),
-    } as object)
-  : {};
+const labProps = LAB_ON ? ({ isLiveboardCompactHeaderEnabled: LAB.compactHeader } as object) : {};
 
 type Props = {
   ref?: React.Ref<LiveboardHandle>;
-  // Styling for this embed only, merged over init()'s (see LiveboardOneRowChips.tsx)
+  // Styling for this embed only, merged over init()'s (see LiveboardMobileFilters.tsx)
   customizations?: React.ComponentProps<typeof LiveboardEmbed>['customizations'];
+  // The "Apply filters and parameters" dialog that lists every filter
+  // (see LiveboardMobileFilters.tsx). undefined: the instance default.
+  centralizedFilters?: boolean;
 };
 
-export default function LiveboardNativeSdk({ ref, customizations }: Props) {
+export default function LiveboardNativeSdk({ ref, customizations, centralizedFilters }: Props) {
+  const centralized = LAB_ON && LAB.centralizedFilters !== undefined ? LAB.centralizedFilters : centralizedFilters;
   const embedRef = useLiveboardRef();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -89,6 +82,9 @@ export default function LiveboardNativeSdk({ ref, customizations }: Props) {
         enable2ColumnLayout // two columns on mid-size screens instead of one (see LiveboardWebSdk.tsx)
         visibleActions={[ALL_LIVEBOARD_FILTERS, Action.DrillDown, Action.AddFilter]}
         customizations={customizations}
+        additionalFlags={
+          centralized === undefined ? undefined : { isCentralizedLiveboardFilterUXEnabled: centralized }
+        }
         {...labProps}
         // ④ Embed events: the embed tells the app what happened
         onLiveboardRendered={() => setLoading(false)}

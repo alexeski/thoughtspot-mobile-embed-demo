@@ -13,7 +13,7 @@ Open the **Guide** tab for an overview, then tap any option to see it running. O
 | 3 | Spotter | Spotter · **Web SDK in a WebView** | `SpotterEmbed` (new Spotter 3 experience), in a WebView | The full Spotter experience with no UI work | [`SpotterScreen.tsx`](app/src/features/spotter/SpotterScreen.tsx) |
 | 4 | Assistant | Headless Spotter (MCP) · **embedded charts** | Your chat UI + Spotter MCP Server; answers shown with `startAutoMCPFrameRenderer()` | Your own agent/chat UX, with interactive ThoughtSpot charts | [`EmbeddedAnswer.tsx`](app/src/features/assistant/EmbeddedAnswer.tsx) |
 | 5 | Assistant | Headless Spotter (MCP) · **native charts** | Your chat UI + Spotter MCP Server; each answer's rows exported and drawn natively | Strict design systems, very light UIs, no browser (watch, voice, Slack) | [`NativeAnswer.tsx`](app/src/features/assistant/NativeAnswer.tsx) |
-| 6 | Dashboard | Liveboard · **React Native SDK, one-row filters** | Option 2 + `rules_UNSTABLE` CSS on this embed only (its `customizations` prop): filter chips on one row that scrolls sideways | Phones, when wrapped filter chips push the tiles down. Unsupported CSS: re-test on every upgrade | [`LiveboardOneRowChips.tsx`](app/src/features/dashboard/LiveboardOneRowChips.tsx) |
+| 6 | Dashboard | Liveboard · **React Native SDK, mobile filters** | Option 2 + filter chips on one scrollable row (`rules_UNSTABLE` CSS on this embed only) + one filter per dialog (`additionalFlags: { isCentralizedLiveboardFilterUXEnabled: false }`) | Phones, when wrapped chips push the tiles down and the all-filters dialog is cramped. The CSS is unsupported: re-test on every upgrade | [`LiveboardMobileFilters.tsx`](app/src/features/dashboard/LiveboardMobileFilters.tsx) |
 
 All five use the **(Sample) Retail - Apparel** model and the **Retail Sales Performance** Liveboard built on it, in the **Eski-Test1** Org on `se-thoughtspot-cloud`. The option catalog lives in one file, [`app/src/options.ts`](app/src/options.ts), which drives the Guide, the option pickers, and the numbering used everywhere.
 
@@ -146,6 +146,8 @@ app/
     theme.ts                      brand colours, fonts + ThoughtSpot CSS variables
     thoughtspot/
       ThoughtSpotWebView.tsx      ★ the web SDK in a WebView: page, origin, token bridge, messages
+      emulator.ts                 software drawing on Android emulators (overlapping tiles)
+      EmulatorSafeWebView.tsx     the same fix for the React Native SDK's WebView (see metro.config.js)
       PrefetchWarmup.tsx          prefetch() at app launch (options 1, 3, 4)
     ui/                           OptionPicker · LoadingOverlay · Markdown · useLayout (phone / tablet)
     features/
@@ -153,7 +155,7 @@ app/
       dashboard/
         DashboardScreen.tsx       option picker + Reload (host event) for 1, 2 and 6
         LiveboardNativeSdk.tsx    option 2
-        LiveboardOneRowChips.tsx  option 6 (option 2 + one-row filter chips)
+        LiveboardMobileFilters.tsx option 6 (option 2 + filters made for phones)
         LiveboardWebSdk.tsx       option 1
       spotter/
         SpotterScreen.tsx         option 3
@@ -388,7 +390,7 @@ curl https://api.anthropic.com/v1/messages \
 | Top of Spotter cut off (tablet in landscape), or bottom of an embedded answer chart cut off | ThoughtSpot's embedded app needs at least 580px of height. Zoom the page to fit with `zoomToFitHeight()` ([`ThoughtSpotWebView.tsx`](app/src/thoughtspot/ThoughtSpotWebView.tsx)), as Spotter and the answer cards do. |
 | Inspect what's inside a WebView | In development builds, open `chrome://inspect` in Chrome on your Mac: every app WebView is listed (`webviewDebuggingEnabled`). |
 | Liveboard spinner for minutes on the emulator | The emulator is slow; a phone takes seconds. For live demos, mirror a USB phone (`npm run demo:usb`). |
-| On the emulator, tiles drawn over other tiles, or white bands over charts | Android emulators put GPU-drawn WebViews on screen wrongly; the page itself is correct (Chromium's own screenshot is fine) and real phones don't show it. On emulators only, `ThoughtSpotWebView` draws in software (`androidLayerType="software"`, detected with `expo-device`), which fixes options 1, 3 and 4. Option 2's WebView is inside ThoughtSpot's React Native SDK, which doesn't expose that setting, so it can still glitch on an emulator. |
+| On the emulator, tiles drawn over other tiles, or white bands over charts | Android emulators put GPU-drawn WebViews on screen wrongly; the page itself is correct (Chromium's own screenshot is fine) and real phones don't show it. On emulators only, WebViews draw in software (`androidLayerType="software"`, detected with `expo-device`, see `emulator.ts`). `ThoughtSpotWebView` sets it for options 1, 3 and 4. Options 2 and 6 run inside ThoughtSpot's React Native SDK, which creates its own WebView and takes no WebView props, so `metro.config.js` hands the SDK a wrapper (`EmulatorSafeWebView.tsx`) instead of `react-native-webview`. After changing `metro.config.js`, restart Expo with `--clear`. |
 | On the emulator, no on-screen keyboard while typing on the Mac | The emulator treats the Mac's keyboard as a physical keyboard, so Android shows only a small Gboard toolbar. Type on the Mac as usual; press **Alt+K** in a text field (or the toolbar's ☰ → *Show on-screen keyboard*) to bring up the full keyboard. `npm run demo` turns on the Android setting this needs (`show_ime_with_hard_keyboard`); with Gboard, also turn on Gboard settings → Physical keyboard → *Show on-screen keyboard*. |
 | Expo Go shows a developer menu on launch | Expo Go's own menu on first launch: close it. |
 

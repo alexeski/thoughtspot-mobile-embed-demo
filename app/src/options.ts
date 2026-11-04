@@ -35,14 +35,14 @@ export const OPTIONS = {
     when: 'A typed native component, but Liveboards only (no Spotter yet) and fewer settings than the web SDK.',
     file: 'src/features/dashboard/LiveboardNativeSdk.tsx',
   },
-  liveboardOneRowChips: {
+  liveboardMobileFilters: {
     number: 6,
     tab: 'dashboard',
-    label: 'One row',
-    title: 'Option 2, with the filter chips on one scrollable row',
-    how: 'Option 2 + CSS rules (rules_UNSTABLE) on this embed only: filter chips on one row that scrolls sideways',
-    when: 'Phones, when wrapped filter chips push the tiles down. Unsupported CSS: re-test it on every ThoughtSpot upgrade.',
-    file: 'src/features/dashboard/LiveboardOneRowChips.tsx',
+    label: 'Mobile filters',
+    title: 'Option 2, with filters made for phones',
+    how: 'Option 2 + filter chips on one scrollable row (CSS) + one filter per dialog',
+    when: 'Phones, when wrapped chips push the tiles down and the all-filters dialog is too cramped. The CSS is unsupported: re-test it on every ThoughtSpot upgrade.',
+    file: 'src/features/dashboard/LiveboardMobileFilters.tsx',
   },
   spotterWebSdk: {
     number: 3,
