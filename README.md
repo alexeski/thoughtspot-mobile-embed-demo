@@ -313,7 +313,7 @@ The **New chat** button in the bar is a host event: `spotter.trigger(HostEvent.R
 | What | How |
 |---|---|
 | Greeting, subtitle, placeholder, the word "Spotter" | `customizations.content.strings`: the exact English text on screen → our text |
-| Spotter's icon → the Northpeak logo | `customizations.iconSpriteUrl`: an SVG sprite with a `<symbol id="rd-icon-spotter">`. ThoughtSpot loads it **over HTTPS only**, from a host its CSP allows (`cdn.jsdelivr.net` always is), so it's off until `EXPO_PUBLIC_ICON_SPRITE_URL` is set |
+| Spotter's icon → the Northpeak logo | `customizations.iconSpriteUrl`: an SVG sprite with a `<symbol id="rd-icon-spotter">`. ThoughtSpot loads it **over HTTPS only**, from a host its CSP allows (`cdn.jsdelivr.net` always is). The app uses this repo's copy on jsDelivr, pinned to a commit; set `EXPO_PUBLIC_ICON_SPRITE_URL` to host your own |
 | ThoughtSpot logo and label on answer cards | `spotterChatConfig: { hideToolResponseCardBranding: true, toolResponseCardBrandingLabel: 'Northpeak' }` |
 | Prompt border | `--ts-var-ai-gradient-color`: brand green → orange |
 

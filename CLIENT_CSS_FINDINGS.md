@@ -35,7 +35,7 @@ The client sent selectors only, so the CSS declarations in the lab are our recon
 
 - **Validated on main:** the app loads Inter through `customCSSUrl` (Google Fonts stylesheet) instead of an `@font-face` in `rules_UNSTABLE`. It works with web SDK 1.53.1 and the React Native SDK 1.0.0.
 - The instance's built-in CSP already allows `fonts.googleapis.com` (style-src) and `fonts.gstatic.com` (font-src), so that needed no admin setup.
-- **For a self-hosted font (e.g. Gordita):**
+- **For a self-hosted (licensed) font:**
   - Font files: add the font host to **Develop → Customizations → Security settings → CSP font-src domains**.
   - With `customCSSUrl` (recommended): also add the stylesheet's host to **CSP style-src domains**.
   - With `@font-face` in `rules_UNSTABLE`: only font-src is needed; the rules are injected inline.

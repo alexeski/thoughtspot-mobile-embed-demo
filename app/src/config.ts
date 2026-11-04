@@ -18,8 +18,11 @@ export const MODEL_ID = process.env.EXPO_PUBLIC_MODEL_ID ?? 'cd252e5c-b552-49a8-
 // logo in place of Spotter's icon (option 4). ThoughtSpot only loads it over
 // HTTPS (the SDK strips "https://" and ThoughtSpot adds it back, so http:// and
 // data: URLs don't work), from a host allowed in its CSP. cdn.jsdelivr.net is
-// allowed on every instance. Empty: Spotter keeps its own icon.
-export const ICON_SPRITE_URL = process.env.EXPO_PUBLIC_ICON_SPRITE_URL || undefined;
+// allowed on every instance, and serves files from public GitHub repos; the
+// default below is this repo's copy, pinned to the commit that added it.
+export const ICON_SPRITE_URL =
+  process.env.EXPO_PUBLIC_ICON_SPRITE_URL ||
+  'https://cdn.jsdelivr.net/gh/alexeski/thoughtspot-mobile-embed-demo@0935f5247577044ceec224f4b15cea1ca7f15f84/app/assets/brand/northpeak-icon-sprite.svg';
 
 // ── Performance ──────────────────────────────────────────────────────────────
 // Pre-render: load the Dashboard tab in the background at app launch, so the
