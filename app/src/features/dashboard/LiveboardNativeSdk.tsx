@@ -21,6 +21,7 @@ import {
 
 import { getAuthToken } from '../../auth';
 import { LIVEBOARD_ID, LIVEBOARD_TAB_ID, TS_HOST } from '../../config';
+import { LAB, withLab } from '../../lab/clientCssLab';
 import { thoughtSpotCustomizations } from '../../theme';
 import LoadingOverlay from '../../ui/LoadingOverlay';
 import type { LiveboardHandle } from './types';
@@ -31,7 +32,7 @@ init({
   thoughtSpotHost: TS_HOST,
   authType: AuthType.TrustedAuthTokenCookieless,
   getAuthToken,
-  customizations: thoughtSpotCustomizations,
+  customizations: withLab(thoughtSpotCustomizations), // client CSS lab: see lab/clientCssLab.ts
   // Prefetch ThoughtSpot's static files. The React Native SDK passes this
   // config to the web SDK in its shell page, which then calls prefetch().
   callPrefetch: true,
@@ -41,6 +42,21 @@ init({
 // (Action.AllLiveboardFilters in the web SDK 1.53+). The React Native SDK's
 // Action enum doesn't have it yet, so pass its value: actions are plain strings.
 const ALL_LIVEBOARD_FILTERS = 'allLiveboardFilters' as Action;
+
+// Client CSS lab: another Liveboard, and the centralized filter dialog flag.
+// The React Native SDK forwards every prop to its shell page, but that page
+// runs web SDK 1.41, which predates isCentralizedLiveboardFilterUXEnabled
+// (1.46) and drops it. additionalFlags (web SDK 1.9+) passes it to
+// ThoughtSpot as a URL flag instead, which the shell does understand.
+const LAB_ON = LAB.mode !== 'off';
+const labProps = LAB_ON
+  ? ({
+      isLiveboardCompactHeaderEnabled: LAB.compactHeader,
+      ...(LAB.centralizedFilters !== undefined && {
+        additionalFlags: { isCentralizedLiveboardFilterUXEnabled: LAB.centralizedFilters },
+      }),
+    } as object)
+  : {};
 
 export default function LiveboardNativeSdk({ ref }: { ref?: React.Ref<LiveboardHandle> }) {
   const embedRef = useLiveboardRef();
@@ -57,15 +73,16 @@ export default function LiveboardNativeSdk({ ref }: { ref?: React.Ref<LiveboardH
       {/* ② The Liveboard – a native component with typed view-config props */}
       <LiveboardEmbed
         ref={embedRef}
-        liveboardId={LIVEBOARD_ID}
-        activeTabId={LIVEBOARD_TAB_ID}
-        hideTabPanel
+        liveboardId={LAB_ON ? LAB.liveboardId : LIVEBOARD_ID}
+        activeTabId={LAB_ON ? undefined : LIVEBOARD_TAB_ID}
+        hideTabPanel={!LAB_ON} // the lab Liveboard's tabs are part of the test
         // The Liveboard's filters in a compact header, no title (see LiveboardWebSdk.tsx)
         isLiveboardCompactHeaderEnabled
         showLiveboardTitle={false}
         showLiveboardDescription={false}
         enable2ColumnLayout // two columns on mid-size screens instead of one (see LiveboardWebSdk.tsx)
         visibleActions={[ALL_LIVEBOARD_FILTERS, Action.DrillDown, Action.AddFilter, Action.Share]}
+        {...labProps}
         // ④ Embed events: the embed tells the app what happened
         onLiveboardRendered={() => setLoading(false)}
         onError={(e: unknown) => {
