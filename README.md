@@ -229,8 +229,8 @@ Prefetch for options 1, 3 and 4 works because their WebViews share one page orig
 ```js
 window.embed = new LiveboardEmbed('#root', {
   liveboardId: LIVEBOARD_ID,
-  isLiveboardCompactHeaderEnabled: true, // the Liveboard's filter chips in a compact header…
-  showLiveboardTitle: false,             // …without the title (the app already names the screen)
+  isLiveboardCompactHeaderEnabled: true, // a compact header: the title, then the filter chips
+  showLiveboardTitle: true,
   visibleActions: [Action.AllLiveboardFilters, Action.DrillDown, Action.AddFilter], // no Share
   fullHeight: true,            // the page scrolls, and tiles lazy-load as they scroll into view
   enable2ColumnLayout: true,   // two columns on mid-size screens instead of one
@@ -253,8 +253,8 @@ init({ thoughtSpotHost, authType: AuthType.TrustedAuthTokenCookieless, getAuthTo
 <LiveboardEmbed
   ref={embedRef}
   liveboardId={LIVEBOARD_ID}
-  isLiveboardCompactHeaderEnabled                  // filter chips in a compact header, no title
-  showLiveboardTitle={false}
+  isLiveboardCompactHeaderEnabled                  // a compact header: the title, then the filter chips
+  showLiveboardTitle
   visibleActions={['allLiveboardFilters' as Action, Action.DrillDown, Action.AddFilter]}
   onLiveboardRendered={() => setLoading(false)}   // embed event → app
 />

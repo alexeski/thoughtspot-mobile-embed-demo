@@ -34,11 +34,10 @@ const script = `
     liveboardId: '${LIVEBOARD_ID}',
     activeTabId: ${JSON.stringify(LIVEBOARD_TAB_ID)},
     hideTabPanel: true,
-    // The Liveboard's filters (State, Region, Date, Item Type) in a compact
-    // header. The app's tab bar already names the screen, so no title or
-    // description: the header is just the filter chips.
+    // A compact header: the Liveboard's title, then its filters (State,
+    // Region, Date, Item Type). No description, to keep the header short.
     isLiveboardCompactHeaderEnabled: true,
-    showLiveboardTitle: false,
+    showLiveboardTitle: true,
     showLiveboardDescription: false,
     // visibleActions is an allowlist: anything not listed is hidden, and that
     // includes the filter chips. AllLiveboardFilters brings them back

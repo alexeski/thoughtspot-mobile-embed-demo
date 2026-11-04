@@ -82,9 +82,9 @@ export default function LiveboardNativeSdk({ ref, customizations }: Props) {
         liveboardId={LAB_ON ? LAB.liveboardId : LIVEBOARD_ID}
         activeTabId={LAB_ON ? undefined : LIVEBOARD_TAB_ID}
         hideTabPanel={!LAB_ON} // the lab Liveboard's tabs are part of the test
-        // The Liveboard's filters in a compact header, no title (see LiveboardWebSdk.tsx)
+        // A compact header with the title and the filters (see LiveboardWebSdk.tsx)
         isLiveboardCompactHeaderEnabled
-        showLiveboardTitle={false}
+        showLiveboardTitle
         showLiveboardDescription={false}
         enable2ColumnLayout // two columns on mid-size screens instead of one (see LiveboardWebSdk.tsx)
         visibleActions={[ALL_LIVEBOARD_FILTERS, Action.DrillDown, Action.AddFilter]}
