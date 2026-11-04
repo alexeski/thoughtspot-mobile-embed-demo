@@ -13,6 +13,7 @@ Open the **Guide** tab for an overview, then tap any option to see it running. O
 | 3 | Spotter | Spotter · **Web SDK in a WebView** | `SpotterEmbed` (new Spotter 3 experience), in a WebView | The full Spotter experience with no UI work | [`SpotterScreen.tsx`](app/src/features/spotter/SpotterScreen.tsx) |
 | 4 | Assistant | Headless Spotter (MCP) · **embedded charts** | Your chat UI + Spotter MCP Server; answers shown with `startAutoMCPFrameRenderer()` | Your own agent/chat UX, with interactive ThoughtSpot charts | [`EmbeddedAnswer.tsx`](app/src/features/assistant/EmbeddedAnswer.tsx) |
 | 5 | Assistant | Headless Spotter (MCP) · **native charts** | Your chat UI + Spotter MCP Server; each answer's rows exported and drawn natively | Strict design systems, very light UIs, no browser (watch, voice, Slack) | [`NativeAnswer.tsx`](app/src/features/assistant/NativeAnswer.tsx) |
+| 6 | Dashboard | Liveboard · **React Native SDK, one-row filters** | Option 2 + `rules_UNSTABLE` CSS on this embed only (its `customizations` prop): filter chips on one row that scrolls sideways | Phones, when wrapped filter chips push the tiles down. Unsupported CSS: re-test on every upgrade | [`LiveboardOneRowChips.tsx`](app/src/features/dashboard/LiveboardOneRowChips.tsx) |
 
 All five use the **(Sample) Retail - Apparel** model and the **Retail Sales Performance** Liveboard built on it, in the **Eski-Test1** Org on `se-thoughtspot-cloud`. The option catalog lives in one file, [`app/src/options.ts`](app/src/options.ts), which drives the Guide, the option pickers, and the numbering used everywhere.
 
@@ -150,8 +151,9 @@ app/
     features/
       guide/GuideScreen.tsx       overview of all options
       dashboard/
-        DashboardScreen.tsx       option picker + Reload (host event) for 1 and 2
+        DashboardScreen.tsx       option picker + Reload (host event) for 1, 2 and 6
         LiveboardNativeSdk.tsx    option 2
+        LiveboardOneRowChips.tsx  option 6 (option 2 + one-row filter chips)
         LiveboardWebSdk.tsx       option 1
       spotter/
         SpotterScreen.tsx         option 3
@@ -229,7 +231,7 @@ window.embed = new LiveboardEmbed('#root', {
   liveboardId: LIVEBOARD_ID,
   isLiveboardCompactHeaderEnabled: true, // the Liveboard's filter chips in a compact header…
   showLiveboardTitle: false,             // …without the title (the app already names the screen)
-  visibleActions: [Action.AllLiveboardFilters, Action.DrillDown, Action.AddFilter, Action.Share],
+  visibleActions: [Action.AllLiveboardFilters, Action.DrillDown, Action.AddFilter], // no Share
   fullHeight: true,            // the page scrolls, and tiles lazy-load as they scroll into view
   enable2ColumnLayout: true,   // two columns on mid-size screens instead of one
 });
@@ -253,7 +255,7 @@ init({ thoughtSpotHost, authType: AuthType.TrustedAuthTokenCookieless, getAuthTo
   liveboardId={LIVEBOARD_ID}
   isLiveboardCompactHeaderEnabled                  // filter chips in a compact header, no title
   showLiveboardTitle={false}
-  visibleActions={['allLiveboardFilters' as Action, Action.DrillDown, Action.AddFilter, Action.Share]}
+  visibleActions={['allLiveboardFilters' as Action, Action.DrillDown, Action.AddFilter]}
   onLiveboardRendered={() => setLoading(false)}   // embed event → app
 />
 embedRef.current?.trigger(HostEvent.Reload);        // host event: app → embed

@@ -35,6 +35,15 @@ export const OPTIONS = {
     when: 'A typed native component, but Liveboards only (no Spotter yet) and fewer settings than the web SDK.',
     file: 'src/features/dashboard/LiveboardNativeSdk.tsx',
   },
+  liveboardOneRowChips: {
+    number: 6,
+    tab: 'dashboard',
+    label: 'One row',
+    title: 'Option 2, with the filter chips on one scrollable row',
+    how: 'Option 2 + CSS rules (rules_UNSTABLE) on this embed only: filter chips on one row that scrolls sideways',
+    when: 'Phones, when wrapped filter chips push the tiles down. Unsupported CSS: re-test it on every ThoughtSpot upgrade.',
+    file: 'src/features/dashboard/LiveboardOneRowChips.tsx',
+  },
   spotterWebSdk: {
     number: 3,
     tab: 'spotter',

@@ -36,6 +36,15 @@ const script = `
     // newer surface is spotterExperienceVersion: SpotterExperienceVersion.SPOTTER_2026_11.
     updatedSpotterExperience: true,
     updatedSpotterChatPrompt: true,
+
+    // No sharing from the app: the answers' Share, and Spotter 3's
+    // share-conversation buttons (header and history menu).
+    hiddenActions: [
+      Action.Share,
+      Action.SpotterShareConversationButtonHeader,
+      Action.SpotterShareConversationMenuItemSidebar,
+      Action.SpotterAnalystShare,
+    ],
   });
 
   spotter

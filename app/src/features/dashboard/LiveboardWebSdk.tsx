@@ -36,14 +36,14 @@ const script = `
     hideTabPanel: true,
     // The Liveboard's filters (State, Region, Date, Item Type) in a compact
     // header. The app's tab bar already names the screen, so no title or
-    // description: the header is just the filter chips and the Share button.
+    // description: the header is just the filter chips.
     isLiveboardCompactHeaderEnabled: true,
     showLiveboardTitle: false,
     showLiveboardDescription: false,
     // visibleActions is an allowlist: anything not listed is hidden, and that
     // includes the filter chips. AllLiveboardFilters brings them back
     // (SDK 1.53+, ThoughtSpot 26.10+).
-    visibleActions: [Action.AllLiveboardFilters, Action.DrillDown, Action.AddFilter, Action.Share],
+    visibleActions: [Action.AllLiveboardFilters, Action.DrillDown, Action.AddFilter],
     fullHeight: true, // one scroll bar (the page's) + lazy loading of tiles
     // Without it, Liveboards jump from the 12-column grid (wider than ~1024px)
     // straight to one column. This adds a two-column step for mid-size screens

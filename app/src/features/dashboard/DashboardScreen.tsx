@@ -1,4 +1,4 @@
-// Dashboard tab – the same Liveboard, two ways (options 1 and 2).
+// Dashboard tab – the same Liveboard, three ways (options 1, 2 and 6).
 // Option 1 (web SDK) is shown first and pre-rendered at launch; see App.tsx.
 import React, { useEffect, useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
@@ -7,12 +7,14 @@ import type { OptionKey } from '../../options';
 import { colors } from '../../theme';
 import OptionPicker, { BarButton } from '../../ui/OptionPicker';
 import LiveboardNativeSdk from './LiveboardNativeSdk';
+import LiveboardOneRowChips from './LiveboardOneRowChips';
 import LiveboardWebSdk from './LiveboardWebSdk';
 import type { LiveboardHandle } from './types';
 
 const OPTIONS = {
   liveboardWebSdk: LiveboardWebSdk,
   liveboardNativeSdk: LiveboardNativeSdk,
+  liveboardOneRowChips: LiveboardOneRowChips,
 } as const;
 type DashboardOption = keyof typeof OPTIONS;
 
@@ -27,6 +29,7 @@ export default function DashboardScreen({
   const refs = {
     liveboardWebSdk: useRef<LiveboardHandle>(null),
     liveboardNativeSdk: useRef<LiveboardHandle>(null),
+    liveboardOneRowChips: useRef<LiveboardHandle>(null),
   };
 
   // Keep every option alive once it has been shown, so switching back and

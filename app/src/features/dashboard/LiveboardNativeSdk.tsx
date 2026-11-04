@@ -58,7 +58,13 @@ const labProps = LAB_ON
     } as object)
   : {};
 
-export default function LiveboardNativeSdk({ ref }: { ref?: React.Ref<LiveboardHandle> }) {
+type Props = {
+  ref?: React.Ref<LiveboardHandle>;
+  // Styling for this embed only, merged over init()'s (see LiveboardOneRowChips.tsx)
+  customizations?: React.ComponentProps<typeof LiveboardEmbed>['customizations'];
+};
+
+export default function LiveboardNativeSdk({ ref, customizations }: Props) {
   const embedRef = useLiveboardRef();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -81,7 +87,8 @@ export default function LiveboardNativeSdk({ ref }: { ref?: React.Ref<LiveboardH
         showLiveboardTitle={false}
         showLiveboardDescription={false}
         enable2ColumnLayout // two columns on mid-size screens instead of one (see LiveboardWebSdk.tsx)
-        visibleActions={[ALL_LIVEBOARD_FILTERS, Action.DrillDown, Action.AddFilter, Action.Share]}
+        visibleActions={[ALL_LIVEBOARD_FILTERS, Action.DrillDown, Action.AddFilter]}
+        customizations={customizations}
         {...labProps}
         // ④ Embed events: the embed tells the app what happened
         onLiveboardRendered={() => setLoading(false)}

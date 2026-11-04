@@ -26,7 +26,10 @@ const CARD_HEIGHT = 480; // compact enough to keep the conversation readable
 export default function EmbeddedAnswer({ answer }: { answer: SpotterAnswer }) {
   const script = useMemo(
     () => `
-      startAutoMCPFrameRenderer({ frameParams: { width: '100%', height: '100%' } });
+      startAutoMCPFrameRenderer({
+        frameParams: { width: '100%', height: '100%' },
+        hiddenActions: [Action.Share], // no sharing from the app
+      });
       const frame = document.createElement('iframe');
       frame.src = ${JSON.stringify(answer.iframe_url)};
       document.getElementById('root').appendChild(frame);

@@ -5,7 +5,7 @@
 // and each embedding option in one self-contained file (see src/options.ts):
 //
 //   Guide      overview of all options               features/guide/
-//   Dashboard  options 1–2  Liveboard                features/dashboard/
+//   Dashboard  options 1–2, 6  Liveboard             features/dashboard/
 //   Spotter    option 3     Spotter UI               features/spotter/
 //   Assistant  options 4–5  headless Spotter (MCP)   features/assistant/
 //
