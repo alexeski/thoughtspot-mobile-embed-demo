@@ -48,6 +48,8 @@ const script = `
     // straight to one column. This adds a two-column step for mid-size screens
     // (tablets); phone widths stay one column.
     enable2ColumnLayout: true,
+    // On touch screens the context menu (Drill down…) opens on a long press –
+    // the phone's right-click. (contextMenuTrigger doesn't apply to Liveboards.)
   });
 
   // ④ Embed events, forwarded to React Native with post()
