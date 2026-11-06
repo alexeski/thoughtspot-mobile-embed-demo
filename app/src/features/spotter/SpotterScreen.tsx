@@ -37,7 +37,10 @@ const SPOTTER_BRANDING = {
       "Hi! I'm Spotter, your AI data analyst": `Hi! I'm the ${ASSISTANT_NAME}`,
       "Let's make sense of your data together": 'Ask me about our sales, stores and products',
       'Enter your question': 'Ask a question about Northpeak',
-      Spotter: ASSISTANT_NAME, // anywhere else it says Spotter
+      // Anywhere else it says Spotter. Keep this no longer than "Spotter":
+      // some labels are sized for that word, and on a phone a longer one
+      // ("Northpeak Guide") makes Spotter's page scroll sideways.
+      Spotter: 'Guide',
     },
   },
 };

@@ -314,7 +314,7 @@ The **New chat** button in the bar is a host event: `spotter.trigger(HostEvent.R
 
 | What | How |
 |---|---|
-| Greeting, subtitle, placeholder, the word "Spotter" | `customizations.content.strings`: the exact English text on screen → our text |
+| Greeting, subtitle, placeholder, the word "Spotter" | `customizations.content.strings`: the exact English text on screen → our text. Replace whole sentences freely, but keep single-word swaps no longer than the original: `Spotter` → `Guide`, not `Northpeak Guide`, which made Spotter scroll sideways on phones (some labels are sized for the word) |
 | Spotter's icon → the Northpeak logo | `customizations.iconSpriteUrl`: an SVG sprite with a `<symbol id="rd-icon-spotter">`. ThoughtSpot loads it **over HTTPS only**, from a host its CSP allows (`cdn.jsdelivr.net` always is). The app uses this repo's copy on jsDelivr, pinned to a commit; set `EXPO_PUBLIC_ICON_SPRITE_URL` to host your own |
 | ThoughtSpot logo and label on answer cards | `spotterChatConfig: { hideToolResponseCardBranding: true, toolResponseCardBrandingLabel: 'Northpeak' }` |
 | Prompt border | `--ts-var-ai-gradient-color`: brand green → orange |
@@ -417,7 +417,7 @@ curl https://api.anthropic.com/v1/messages \
 |---|---|
 | "Backend has no POST /api/…" | The app is newer than the backend that's running. Restart it (`npm start`). |
 | Token works but Spotter returns 400, or embeds show nothing | The token's Org doesn't hold the objects. See *Orgs* above. |
-| Spotter scrolls sideways | The classic Spotter UI. Turn on `updatedSpotterExperience`. |
+| Spotter scrolls sideways | The classic Spotter UI: turn on `updatedSpotterExperience`. Or a text replacement longer than the word it replaces: keep `content.strings` swaps for single words (e.g. `Spotter`) as short as the original. |
 | Top of Spotter cut off (tablet in landscape), or bottom of an embedded answer chart cut off | ThoughtSpot's embedded app needs at least 580px of height. Zoom the page to fit with `zoomToFitHeight()` ([`ThoughtSpotWebView.tsx`](app/src/thoughtspot/ThoughtSpotWebView.tsx)), as Spotter and the answer cards do. |
 | Inspect what's inside a WebView | In development builds, open `chrome://inspect` in Chrome on your Mac: every app WebView is listed (`webviewDebuggingEnabled`). |
 | How do I drill down on a phone? | **Touch and hold** a data point (in the emulator: hold the left mouse button about a second). The context menu opens with **Drill down**, on charts and tables. A quick tap only shows the tooltip. A long press is the phone's right-click; in the emulator a real right-click can't be used, since Android turns it into Back. `contextMenuTrigger: LEFT_CLICK` doesn't change this: it applies to full-app and search embeds, not Liveboards. |
